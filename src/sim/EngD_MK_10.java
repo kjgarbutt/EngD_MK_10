@@ -98,9 +98,9 @@ public class EngD_MK_10 extends SimState {
 
 	public static double speed_vehicle = 1000;//4000; // approximately 30 mph
 
-	public static int loadingTime = 4;
-	public static int deliveryTime = 3;
-	public static int approxManifestSize = 100;
+	public static int loadingTime = 4; // 1 = 5 minutes
+	public static int deliveryTime = 5; // 1 = 5 minutes
+	public static int approxManifestSize = 100;	// 100 'units' per vehicle
 
 	public static int numMaxAgents = 10;
 	public static int numMaxLoads = 10000;

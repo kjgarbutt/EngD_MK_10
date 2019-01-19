@@ -32,7 +32,7 @@ public class AidLoad extends MobileAgent {
 		isMovable = true;
 		targetCommunity = target;
 		world = state;
-		history.add("Parcel Initialised and Allocated to: \t" + target.getStringAttribute("LSOA_CODE"));
+		//history.add("Parcel Initialised and Allocated to: \t" + target.getStringAttribute("LSOA_CODE"));
 		//
 	}
 

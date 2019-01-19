@@ -8,7 +8,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 
 import comparators.AidLoadDistanceComparator;
 import comparators.AidLoadPriorityComparator;
-import sim.EngD_MK_9;
+import sim.EngD_MK_10;
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.util.geo.MasonGeometry;
@@ -18,7 +18,7 @@ import utilities.HeadquartersUtilities;
 
 public class Headquarters extends SpatialAgent implements Burdenable {
 
-	EngD_MK_9 world;
+	EngD_MK_10 world;
 	
 	GeoNode myNode = null;
 	
@@ -29,7 +29,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 	ArrayList <Driver> inBays;
 	ArrayList <Driver> waiting;
 	
-	public Headquarters (Coordinate c, int numbays, EngD_MK_9 world){
+	public Headquarters (Coordinate c, int numbays, EngD_MK_10 world){
 		super(c);
 		loads = new ArrayList <AidLoad> ();
 		inBays = new ArrayList <Driver> ();
@@ -127,7 +127,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 			
 		}
 		
-		return EngD_MK_9.loadingTime;
+		return EngD_MK_10.loadingTime;
 	}
 	
 	ArrayList <AidLoad> getNextRound(){
@@ -148,7 +148,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 					
 					// update record of visits!
 					// TODO THIS ASSUMES ONLY ONE LOAD PER VEHICLE, and also assumes you're gonna make it!!
-					HashMap <MasonGeometry, Integer> records = ((EngD_MK_9) state).visitedWardRecord;
+					HashMap <MasonGeometry, Integer> records = ((EngD_MK_10) state).visitedWardRecord;
 					MasonGeometry targetWard = newRound.get(0).targetCommunity;
 					Integer numVisits = records.get(targetWard);
 					if(numVisits == null) numVisits = 1;
@@ -183,7 +183,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 			if(waiting.size() > 0){
 				Driver n = waiting.remove(0);
 				inBays.add(n);
-				world.schedule.scheduleOnce(world.schedule.getTime() + EngD_MK_9.loadingTime, n);
+				world.schedule.scheduleOnce(world.schedule.getTime() + EngD_MK_10.loadingTime, n);
 			}
 		}
 		else

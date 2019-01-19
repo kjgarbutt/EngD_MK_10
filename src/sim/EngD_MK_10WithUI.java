@@ -29,7 +29,7 @@ import swise.visualization.AttributePolyPortrayal;
 import swise.visualization.SegmentedColorMap;
 import sim.util.geo.MasonGeometry;
 
-public class EngD_MK_9WithUI extends GUIState {
+public class EngD_MK_10WithUI extends GUIState {
 
 	/////////////////////////////////////////////////
 	/////////////// DISPLAY FUNCTIONS ///////////////
@@ -63,13 +63,13 @@ public class EngD_MK_9WithUI extends GUIState {
 	///////////////////////////////////////////////
 
 	/** constructor function */
-	public EngD_MK_9WithUI(SimState state) {
+	public EngD_MK_10WithUI(SimState state) {
 		super(state);
 	}
 
 	/** constructor function */
-	public EngD_MK_9WithUI() {
-		super(new EngD_MK_9(System.currentTimeMillis()));
+	public EngD_MK_10WithUI() {
+		super(new EngD_MK_10(System.currentTimeMillis()));
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class EngD_MK_9WithUI extends GUIState {
 	}
 
 	public void setupPortrayals() {
-		EngD_MK_9 world = (EngD_MK_9) state;
+		EngD_MK_10 world = (EngD_MK_10) state;
 
 		System.out.println("...setupPortrayals()");
 
@@ -214,7 +214,7 @@ public class EngD_MK_9WithUI extends GUIState {
 	 * state.schedule.scheduleRepeating(new Steppable() { private static final long
 	 * serialVersionUID = -3749005402522867098L;
 	 * 
-	 * public void step(SimState state) { sim.MK_9 world = (sim.MK_9) state; double
+	 * public void step(SimState state) { sim.MK_10 world = (sim.MK_10) state; double
 	 * maxS = 0, minS = 10000, avgS = 0, count = 0; ////////////////////////////
 	 * Main Agent ////////////////////// for (Agent a : world.agentList) { if
 	 * (a.distributing) { continue; } count++; double speed = Math.abs(a.speed);
@@ -238,7 +238,7 @@ public class EngD_MK_9WithUI extends GUIState {
 
 		/////////////// MAIN DISPLAY ///////////////
 		// makes the displayer and visualises the maps
-		display = new Display2D((int) (EngD_MK_9.grid_width), (int) (EngD_MK_9.grid_height), this);
+		display = new Display2D((int) (EngD_MK_10.grid_width), (int) (EngD_MK_10.grid_height), this);
 		// turn off clipping
 		// display.setClipping(false);
 
@@ -255,7 +255,7 @@ public class EngD_MK_9WithUI extends GUIState {
 		display.attach(drivers, "Drivers");
 
 		displayFrame = display.createFrame();
-		displayFrame.setTitle("EngD ABM Model MK_9");
+		displayFrame.setTitle("EngD ABM Model MK_10");
 		controller.registerFrame(displayFrame); // register the frame so it appears in the "Display" list
 		displayFrame.setVisible(true);
 
@@ -289,12 +289,12 @@ public class EngD_MK_9WithUI extends GUIState {
 	 * @return name of the simulation
 	 */
 	public static String getName() {
-		return "EngD ABM Model MK_9";
+		return "EngD ABM Model MK_10";
 	}
 
 	public static void main(String[] args) {
-		(new EngD_MK_9WithUI()).createController();
-		//EngD_MK_9WithUI worldGUI = new EngD_MK_9WithUI();
+		(new EngD_MK_10WithUI()).createController();
+		//EngD_MK_10WithUI worldGUI = new EngD_MK_10WithUI();
         //Console console = new Console(worldGUI);
         //console.setVisible(true);
 	}

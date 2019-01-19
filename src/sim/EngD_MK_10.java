@@ -65,7 +65,7 @@ import objects.Driver;
 import objects.AidLoad;
 
 /**
- * "MK_9" is the ninth iteration of my EngD project model.
+ * "MK_10" is the final iteration of my EngD project model.
  * 
  * The model is adapted from the MASON demo, "Gridlock", made by Sarah Wise,
  * Mark Coletti, and Andrew Crooks and "SimpleDrivers," made by Sarah Wise.
@@ -86,7 +86,7 @@ import objects.AidLoad;
  * @author KJGarbutt
  *
  */
-public class EngD_MK_9 extends SimState {
+public class EngD_MK_10 extends SimState {
 
 	/////////////// Model Parameters ///////////////
 
@@ -168,7 +168,7 @@ public class EngD_MK_9 extends SimState {
 	 * 
 	 * @param seed
 	 */
-	public EngD_MK_9(long seed) {
+	public EngD_MK_10(long seed) {
 		super(seed);
 		random = new MersenneTwisterFast(12345);
 	}
@@ -515,7 +515,7 @@ public class EngD_MK_9 extends SimState {
 	 * public ArrayList<String> agentGoals(String agentfilename) throws IOException
 	 * { String csvGoal = null; BufferedReader agentGoalsBuffer = null;
 	 * 
-	 * String agentFilePath = EngD_MK_9.class.getResource(agentfilename).getPath();
+	 * String agentFilePath = EngD_MK_10.class.getResource(agentfilename).getPath();
 	 * FileInputStream agentfstream = new FileInputStream(agentFilePath);
 	 * System.out.println("Reading Agent's Goals file: " + agentFilePath);
 	 * 
@@ -665,19 +665,19 @@ public class EngD_MK_9 extends SimState {
 			System.exit(0);
 		}
 
-		EngD_MK_9 EngD_MK_9 = new EngD_MK_9(System.currentTimeMillis());
+		EngD_MK_10 EngD_MK_10 = new EngD_MK_10(System.currentTimeMillis());
 
 		System.out.println("Loading...");
 
-		EngD_MK_9.start();
+		EngD_MK_10.start();
 
 		System.out.println("Running...");
 
 		for (int i = 0; i < 288 * 3; i++) {
-			EngD_MK_9.schedule.step(EngD_MK_9);
+			EngD_MK_10.schedule.step(EngD_MK_10);
 		}
 
-		EngD_MK_9.finish();
+		EngD_MK_10.finish();
 
 		System.out.println("...run finished");
 

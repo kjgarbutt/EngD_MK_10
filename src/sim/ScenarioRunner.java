@@ -6,7 +6,7 @@ public class ScenarioRunner {
 		
 		for(int x = 0; x < 10; x++) {
 			
-			EngD_MK_9 dummySim = new EngD_MK_9(System.currentTimeMillis());
+			EngD_MK_10 dummySim = new EngD_MK_10(System.currentTimeMillis());
 
 			System.out.println("NEW RUN...." + x);
 			System.out.println("Loading...");

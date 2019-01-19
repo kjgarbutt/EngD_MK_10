@@ -6,13 +6,13 @@ import org.apache.commons.lang.RandomStringUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
-import sim.EngD_MK_9;
+import sim.EngD_MK_10;
 import sim.util.geo.MasonGeometry;
 import swise.agents.MobileAgent;
 
 public class AidLoad extends MobileAgent {
 
-	EngD_MK_9 world;
+	EngD_MK_10 world;
 	
 	Burdenable carryingUnit = null;
 	MasonGeometry targetCommunity = null;
@@ -23,7 +23,7 @@ public class AidLoad extends MobileAgent {
 	int status; // 0 = undelivered, 1 = failed delivery attempt, 2 = out for delivery, 3 =
 				// delivered
 
-	public AidLoad(Burdenable hq, MasonGeometry target, EngD_MK_9 state) {
+	public AidLoad(Burdenable hq, MasonGeometry target, EngD_MK_10 state) {
 		super((Coordinate) target.geometry.getCoordinate());
 		parcelID = "Load " + RandomStringUtils.randomAlphanumeric(4).toUpperCase() + System.currentTimeMillis();
 		carryingUnit = hq;
@@ -77,7 +77,7 @@ public class AidLoad extends MobileAgent {
 
 	public boolean deliver() {
 		
-		if (getLocation().distance(deliveryLocation) < EngD_MK_9.resolution) {
+		if (getLocation().distance(deliveryLocation) < EngD_MK_10.resolution) {
 			
 			carryingUnit.removeLoad(this);
 			geometry = world.fa.createPoint(deliveryLocation);

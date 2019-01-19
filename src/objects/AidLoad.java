@@ -25,14 +25,15 @@ public class AidLoad extends MobileAgent {
 
 	public AidLoad(Burdenable hq, MasonGeometry target, EngD_MK_10 state) {
 		super((Coordinate) target.geometry.getCoordinate());
-		parcelID = "Load " + RandomStringUtils.randomAlphanumeric(4).toUpperCase() + System.currentTimeMillis();
+		parcelID = RandomStringUtils.randomAlphanumeric(4).toUpperCase() + System.currentTimeMillis();
 		carryingUnit = hq;
 		history = new ArrayList<String>();
 		hq.addLoad(this);
 		isMovable = true;
 		targetCommunity = target;
 		world = state;
-		history.add("initialisedAndAllocatedTo\t" + target.getStringAttribute("LSOA_CODE"));
+		history.add("Parcel Initialised and Allocated to: \t" + target.getStringAttribute("LSOA_CODE"));
+		//
 	}
 
 	public String giveName() { return parcelID; }
@@ -67,7 +68,8 @@ public class AidLoad extends MobileAgent {
 			}
 			
 			carryingUnit = to;
-			history.add("Transferred!\t" + fromName + "\t" + toName + "\t" + world.schedule.getTime());
+			history.add("\t" + fromName + "\t" + toName + "\t" + world.schedule.getTime());
+			//Load was transferred from + by Driver + at Time Step
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -82,14 +84,14 @@ public class AidLoad extends MobileAgent {
 			carryingUnit.removeLoad(this);
 			geometry = world.fa.createPoint(deliveryLocation);
 			world.deliveryLocationLayer.addGeometry(this);
-			history.add("DeliveredTo\t" + targetCommunity.getStringAttribute("LSOA_CODE") 
-				+ "\t" + world.schedule.getTime());
+			history.add(targetCommunity.getStringAttribute("LSOA_CODE") + "\t" + world.schedule.getTime());
+			// Target LSOA + Time Step
 			
 			status = 3; // delivered
 			return true;
 		}
 		status = 1; // failed delivery attempt
-		history.add("FailedDeliveryTo\t" + deliveryLocation.toString());
+		history.add("Failed Delivery to: \t" + deliveryLocation.toString());
 		return false;
 	}
 	

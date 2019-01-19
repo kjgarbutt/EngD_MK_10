@@ -602,28 +602,32 @@ public class EngD_MK_10 extends SimState {
 		
 		try {
 			// save the history
-			BufferedWriter output = new BufferedWriter(new FileWriter(dirName + "Model_Output_" + mySeed + ".txt"));
+			BufferedWriter output = new BufferedWriter(new FileWriter(dirName + "Output_Round_Record_" + mySeed + ".txt"));
 
-			output.write("ROUND RECORD - driver, duration, distance, finish time\n");
+			output.write("ROUND RECORD\nDriver,Duration,Distance,Finish time\n");
 			for (Driver a : agents) {
 				for (String s : a.getHistory())
 					output.write(s + "\n");
 			}
+			output.close();
 
-			output.write("\nPARCEL RECORD\n");
+			BufferedWriter output1 = new BufferedWriter(new FileWriter(dirName + "Output_Parcel_Record_" + mySeed + ".txt"));
+			output1.write("PARCEL RECORD\nLoad ID,Delivered to,Delivery time step,Load transferred from,Driver,Departure time step,LSOA\n");
 			
 			for(AidLoad al: loadsRecord) {
-				output.write(al.giveName() + "\t");
+				output1.write(al.giveName() + "\t");
 				String pOutput = "";
 				for(int s = al.getHistory().size() - 1; s >= 0; s--)
-					pOutput += al.getHistory().get(s) + " ; ";
-				output.write(pOutput + "\n");
+					pOutput += al.getHistory().get(s);
+				output1.write(pOutput + "\n");
 			}
+			output1.close();
 			
-			output.write("\nWARD VISITS\n");
+			BufferedWriter output2 = new BufferedWriter(new FileWriter(dirName + "Output_Wards_Visited_" + mySeed + ".txt"));
+			output2.write("WARD VISITS\nLSOA,Num. Visits\n");
 			
 			for (MasonGeometry ward: visitedWardRecord.keySet()) {
-				output.write(ward.getStringAttribute("LSOA_CODE") + "\t" + visitedWardRecord.get(ward) + "\n");
+				output2.write(ward.getStringAttribute("LSOA_CODE") + "\t" + visitedWardRecord.get(ward) + "\n");
 			}
 			
 			/*
@@ -631,7 +635,7 @@ public class EngD_MK_10 extends SimState {
 			 * + "\n"); }
 			 */
 
-			output.close();
+			output2.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -76,7 +76,7 @@ public class EngD_MK_10 extends SimState {
 	public static int approxManifestSize = 100; // 100 'units' per vehicle
 
 	public static int numMaxAgents = 10;
-	public static int numMaxLoads = 10000;
+	public static int numMaxLoads = 1000;
 	public static int numBays = 10;
 	public static double probFailedDelivery = .0;
 

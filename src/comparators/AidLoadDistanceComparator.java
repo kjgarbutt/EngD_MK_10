@@ -11,6 +11,7 @@ import sim.util.geo.MasonGeometry;
  * @author KJGarbutt
  *
  */
+/*
 public class AidLoadDistanceComparator implements Comparator<AidLoad> {
 
 	MasonGeometry targetLocation = null;
@@ -30,3 +31,4 @@ public class AidLoadDistanceComparator implements Comparator<AidLoad> {
 	}
 	
 }
+*/

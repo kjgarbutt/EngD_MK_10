@@ -23,7 +23,7 @@ public class HeadquartersUtilities {
 		
 		// establish the number of rounds necessary
 		int approxNumRounds = (int)(Math.ceil( num / targetSize )); // the number of parcels relative to the size of a round
-		double roundsPerSide = Math.ceil(Math.sqrt(approxNumRounds)); // the approx area covered per round
+		double roundsPerSide = Math.ceil(Math.sqrt(approxNumRounds)); // the approximate area covered per round
 	
 		// set up a round for each category
 		ArrayList <ArrayList <AidLoad>> rounds = new ArrayList <ArrayList<AidLoad>> (); // for safety??

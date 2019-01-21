@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
-import comparators.AidLoadDistanceComparator;
+import comparators.AidLoadPriorityComparator;
 import sim.EngD_MK_10;
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -198,8 +198,8 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 		// for each load, create a new object. Future examples can have multiple loads per round!
 		this.rounds = new ArrayList <ArrayList <AidLoad>> ();
 		
-		// AidLoadPriorityComparator alpc = new AidLoadPriorityComparator();
-		AidLoadDistanceComparator alpc = new AidLoadDistanceComparator(this);
+		AidLoadPriorityComparator alpc = new AidLoadPriorityComparator();
+		//AidLoadDistanceComparator alpc = new AidLoadDistanceComparator(this);
 		Collections.sort(loads, alpc);
 		
 		for(AidLoad al: loads) {

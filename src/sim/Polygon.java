@@ -1,9 +1,8 @@
 package sim;
 
-import sim.util.geo.MasonGeometry;
 import java.util.ArrayList;
 
-import schellingpolygon.Person;
+import sim.util.geo.MasonGeometry;
 
 /**
  * Polygon.java

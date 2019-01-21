@@ -1,5 +1,12 @@
 package sim;
 
+/**
+ * Allows the user to run the model a set number of times and just walk away
+ * 
+ * @author KJGarbutt
+ *
+ */
+
 public class ScenarioRunner {
 	
 	public static void main(String [] args) {
@@ -8,12 +15,15 @@ public class ScenarioRunner {
 			
 			EngD_MK_10 dummySim = new EngD_MK_10(System.currentTimeMillis());
 
-			System.out.println("NEW RUN...." + x);
-			System.out.println("Loading...");
+			System.out.println("///////////////////////\nNEW RUN..." + x + "\n///////////////////////");
+			//System.out.println("NEW RUN..." + x);
+			System.out.println("///////////////////////\nLOADING...\n///////////////////////");
+			//System.out.println("Loading...");
 
 			dummySim.start();
 
-			System.out.println("Running...");
+			System.out.println("///////////////////////\nRUNNING...\n///////////////////////");
+			//System.out.println("Running...");
 
 			while(!dummySim.schedule.scheduleComplete() && dummySim.schedule.getTime() < 288 * 3) {
 				dummySim.schedule.step(dummySim);
@@ -21,7 +31,8 @@ public class ScenarioRunner {
 
 			dummySim.finish();
 
-			System.out.println("...run finished");
+			System.out.println("///////////////////////\n...RUN FINISHED\n///////////////////////");
+			//System.out.println("...run finished");
 		}
 		
 	}

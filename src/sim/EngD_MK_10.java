@@ -1,68 +1,41 @@
 package sim;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.channels.FileLock;
-import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.eclipse.swt.widgets.Item;
-
-import sim.engine.SimState;
-import sim.engine.Steppable;
-import sim.field.geo.GeomGridField;
-import sim.field.geo.GeomGridField.GridDataType;
-import sim.field.geo.GeomVectorField;
-import sim.field.grid.Grid2D;
-import sim.field.grid.IntGrid2D;
-import sim.field.network.Edge;
-import sim.field.network.Network;
-import sim.io.geo.ShapeFileImporter;
-import sim.portrayal.geo.GeomVectorFieldPortrayal;
-import sim.io.geo.ArcInfoASCGridImporter;
-import sim.util.Bag;
-import sim.util.geo.AttributeValue;
-import sim.util.geo.GeomPlanarGraph;
-import sim.util.geo.MasonGeometry;
-import sim.util.geo.PointMoveTo;
-import swise.agents.communicator.Communicator;
-import swise.agents.communicator.Information;
-import swise.disasters.Wildfire;
-import swise.objects.AStar;
-import swise.objects.NetworkUtilities;
-import swise.objects.PopSynth;
-import swise.objects.network.GeoNode;
-import swise.objects.network.ListEdge;
-import utilities.HeadquartersUtilities;
-import utilities.DriverUtilities;
-import utilities.InputCleaning;
-import utilities.RoadNetworkUtilities;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.linearref.LengthIndexedLine;
 
 import ec.util.MersenneTwisterFast;
-import objects.Headquarters;
-import objects.Driver;
 import objects.AidLoad;
+import objects.Driver;
+import objects.Headquarters;
+import sim.engine.SimState;
+import sim.field.geo.GeomVectorField;
+import sim.field.network.Edge;
+import sim.field.network.Network;
+import sim.io.geo.ShapeFileImporter;
+import sim.util.Bag;
+import sim.util.geo.AttributeValue;
+import sim.util.geo.MasonGeometry;
+import swise.agents.communicator.Information;
+import swise.objects.NetworkUtilities;
+import swise.objects.network.GeoNode;
+import swise.objects.network.ListEdge;
+import utilities.DriverUtilities;
+import utilities.InputCleaning;
+import utilities.RoadNetworkUtilities;
 
 /**
  * "MK_10" is the final iteration of my EngD project model.
@@ -93,14 +66,14 @@ public class EngD_MK_10 extends SimState {
 	private static final long serialVersionUID = 1L;
 	public static int grid_width = 970;
 	public static int grid_height = 620;
-	public static double resolution = 5;// the granularity of the simulation
-	// (fiddle around with this to merge nodes into one another)
+	public static double resolution = 5;
+	// the granularity of the simulation (fiddle around with this to merge nodes into one another)
 
-	public static double speed_vehicle = 1000;//4000; // approximately 30 mph
+	public static double speed_vehicle = 1000; // approximately 30MPH
 
-	public static int loadingTime = 4; // 1 = 5 minutes
+	public static int loadingTime = 3; // 1 = 5 minutes
 	public static int deliveryTime = 5; // 1 = 5 minutes
-	public static int approxManifestSize = 100;	// 100 'units' per vehicle
+	public static int approxManifestSize = 100; // 100 'units' per vehicle
 
 	public static int numMaxAgents = 10;
 	public static int numMaxLoads = 10000;
@@ -141,8 +114,8 @@ public class EngD_MK_10 extends SimState {
 	// Model ArrayLists for agents and OSVI Polygons
 	public ArrayList<Driver> agents = new ArrayList<Driver>(10);
 	ArrayList<Integer> assignedWards = new ArrayList<Integer>();
-	public HashMap <MasonGeometry, Integer> visitedWardRecord = new HashMap <MasonGeometry, Integer> (); // TODO record visited LSOAs
-	ArrayList<AidLoad> loadsRecord = new ArrayList<AidLoad>(); 
+	public HashMap<MasonGeometry, Integer> visitedWardRecord = new HashMap<MasonGeometry, Integer>();
+	ArrayList<AidLoad> loadsRecord = new ArrayList<AidLoad>();
 
 	ArrayList<Polygon> polys = new ArrayList<Polygon>();
 	ArrayList<String> csvData = new ArrayList<String>();
@@ -235,7 +208,7 @@ public class EngD_MK_10 extends SimState {
 			setup();
 
 			// clean up the road network
-			System.out.println("Cleaning the road network...");
+			System.out.println("\nCleaning the road network...");
 
 			roads = NetworkUtilities.multipartNetworkCleanup(roadLayer, roadNodes, resolution, fa, random, 0);
 			roadNodes = roads.getAllNodes();
@@ -304,7 +277,7 @@ public class EngD_MK_10 extends SimState {
 			baseLayer.setMBR(MBR);
 			boundaryLayer.setMBR(MBR);
 
-			System.out.println("Done!");
+			//System.out.print("done");
 
 			//////////////////////////////////////////////
 			////////////////// AGENTS ////////////////////
@@ -318,45 +291,11 @@ public class EngD_MK_10 extends SimState {
 			}
 
 			agents.addAll(DriverUtilities.setupDriversAtDepots(this, fa, numMaxAgents));
+			System.out.println("Getting unassigned LSOA with highest OSVI ratings...");
 			for (Driver p : agents) {
 				agentLayer.addGeometry(p);
 				getMostVulnerableUnassignedWard();
 			}
-
-			// set up the agents in the simulation
-			/*
-			 * setupPersonsFromFile(dirName + agentFilename); agentsLayer.setMBR(MBR);
-			 * 
-			 * // for each of the Persons, set up relevant, environment-specific information
-			 * int aindex = 0; for(Person a: agents){
-			 * 
-			 * if(a.familiarRoadNetwork == null){
-			 * 
-			 * // the Person knows about major roads Network familiar =
-			 * majorRoads.cloneGraph();
-			 * 
-			 * // connect the major network to the Person's location
-			 * connectToMajorNetwork(a.getNode(), familiar);
-			 * 
-			 * a.familiarRoadNetwork = familiar;
-			 * 
-			 * // add local roads into the network for(Object o:
-			 * agentsLayer.getObjectsWithinDistance(a, 50)){ Person b = (Person) o; if(b ==
-			 * a || b.familiarRoadNetwork != null || b.getNode() != a.getNode()) continue;
-			 * b.familiarRoadNetwork = familiar.cloneGraph(); }
-			 * 
-			 * }
-			 * 
-			 * // connect the Person's work into its personal network if(a.getWork() !=
-			 * null) connectToMajorNetwork(getClosestGeoNode(a.getWork()),
-			 * a.familiarRoadNetwork);
-			 * 
-			 * // set up its basic paths (fast and quicker and recomputing each time)
-			 * a.setupPaths();
-			 * 
-			 * if(aindex % 100 == 0){ // print report of progress System.out.println("..." +
-			 * aindex + " of " + agents.size()); } aindex++; }
-			 */
 			// seed the simulation randomly
 			seedRandom(System.currentTimeMillis());
 
@@ -367,13 +306,11 @@ public class EngD_MK_10 extends SimState {
 
 	public void setupDepots(GeomVectorField dummyDepots) {
 		Bag depots = dummyDepots.getGeometries();
-		System.out.println();
 		System.out.println("Setting up HQ...");
 
 		for (Object o : depots) {
 			MasonGeometry mg = (MasonGeometry) o;
-			// int numbays = mg.getIntegerAttribute("loadbays");
-			// int numbays = 15;
+			//int numbays = mg.getIntegerAttribute("loadbays");
 			GeoNode gn = snapPointToNode(mg.geometry.getCoordinate());
 
 			Headquarters d = new Headquarters(gn.geometry.getCoordinate(), numBays, this);
@@ -457,7 +394,8 @@ public class EngD_MK_10 extends SimState {
 	}
 
 	public void generateLoads(Headquarters d) {
-		System.out.println("Generating Parcels!");
+		System.out.println("Generating parcels...");
+		//System.out.print("done");
 
 		/////////////////////////////////////////////////////////////
 		///////////////// HASHMAP FUN TIMES /////////////////////////
@@ -465,30 +403,24 @@ public class EngD_MK_10 extends SimState {
 
 		// https://coderanch.com/t/631749/java/arraylist-index-items-hashmap-key
 		// https://www.geeksforgeeks.org/traverse-through-a-hashmap-in-java/
-		
-		////////////////////////////////////////////////////////////////////
-		///////////////// END OF HASHMAP FUN TIMES /////////////////////////
-		////////////////////////////////////////////////////////////////////
 
 		ArrayList<AidLoad> myLoads = new ArrayList<AidLoad>();
 		Bag centroidGeoms = centroidsLayer.getGeometries();
 
-		System.out.println();
-		System.out.println("Assigning aid parcels...");
-		System.out.println();
+		System.out.println("Assigning parcels to drivers...");
 
 		for (Object o : centroidGeoms) {
 
 			MasonGeometry myCentroid = (MasonGeometry) o;
 			int households = myCentroid.getIntegerAttribute("Households");
-			
-			// create a number of loads based on the number of households
-			int numLoads = households / approxManifestSize; 
+
+			// create a number of loads based on the number of households + 1 to cover any stragglers
+			int numLoads = households / approxManifestSize + 1;
 			for (int i = 0; i < numLoads; i++) {
 
 				Point deliveryLoc = myCentroid.geometry.getCentroid();
 				Coordinate myCoordinate = deliveryLoc.getCoordinate();
-			
+
 				if (!MBR.contains(myCoordinate)) {
 					System.out.println("myCoordinate is in MBR");
 					i--;
@@ -498,43 +430,14 @@ public class EngD_MK_10 extends SimState {
 				AidLoad p = new AidLoad(d, myCentroid, this);
 				p.setDeliveryLocation(myCoordinate);
 				myLoads.add(p);
-				
+
 				loadsRecord.add(p);
 			}
 		}
 	}
 
-	/**
-	 * /////////////// Setup agentGoals /////////////// Read in the agent goals CSV
-	 * 
-	 * @param agentfilename
-	 * @return
-	 *
-	 */
-	/*
-	 * public ArrayList<String> agentGoals(String agentfilename) throws IOException
-	 * { String csvGoal = null; BufferedReader agentGoalsBuffer = null;
-	 * 
-	 * String agentFilePath = EngD_MK_10.class.getResource(agentfilename).getPath();
-	 * FileInputStream agentfstream = new FileInputStream(agentFilePath);
-	 * System.out.println("Reading Agent's Goals file: " + agentFilePath);
-	 * 
-	 * try { agentGoalsBuffer = new BufferedReader(new
-	 * InputStreamReader(agentfstream)); agentGoalsBuffer.readLine(); while
-	 * ((csvGoal = agentGoalsBuffer.readLine()) != null) { String[] splitted =
-	 * csvGoal.split(",");
-	 * 
-	 * ArrayList<String> agentGoalsResult = new ArrayList<String>(splitted.length);
-	 * for (String data : splitted) agentGoalsResult.add(data);
-	 * csvData.addAll(agentGoalsResult); } System.out.println();
-	 * System.out.println("Full csvData Array: " + csvData);
-	 * 
-	 * } finally { if (agentGoalsBuffer != null) agentGoalsBuffer.close(); } return
-	 * csvData; }
-	 */
-
 	int getMostVulnerableUnassignedWard() {
-		System.out.println("Getting unassigned LSOA with highest OSVI ratings...");
+		//System.out.println("\nGetting unassigned LSOA with highest OSVI ratings...");
 		Bag centroidGeoms = centroidsLayer.getGeometries();
 
 		int highestOSVI = -1;
@@ -574,14 +477,11 @@ public class EngD_MK_10 extends SimState {
 
 		int id = myCopy.getIntegerAttribute("ID"); // Here, id changes to the highestOSVI
 		assignedWards.add(id); // add ID to the "assignedWards" ArrayList
-		System.out.println();
-		System.out.println("Highest OSVI Raiting is: " + myCopy.getIntegerAttribute("L_GL_OSVI_") + " for: "
+		System.out.println("\tHighest OSVI Raiting is: " + myCopy.getIntegerAttribute("L_GL_OSVI_") + " for: "
 				+ myCopy.getStringAttribute("LSOA_NAME") + " (ward ID: " + myCopy.getIntegerAttribute("ID") + ")"
 				+ " and it has " + myCopy.getIntegerAttribute("Households") + " households that may need assistance.");
-		System.out.println("Current list of most vulnerable unassigned wards: " + assignedWards); // Prints out: the ID
-																									// for the
-																									// highestOSVI
-		System.out.println();
+		System.out.println("\t\tCurrent list of most vulnerable unassigned wards: " + assignedWards); 
+		// Prints out: the ID for the highestOSVI
 		return myCopy.getIntegerAttribute("ROAD_ID"); // TODO: ID instead?
 	}
 
@@ -598,11 +498,10 @@ public class EngD_MK_10 extends SimState {
 		System.out.println("///////////////////////\nOUTPUTTING STUFFS\n///////////////////////");
 		System.out.println();
 
-		// TODO maybe output to file the parameters!!!!
-		
 		try {
 			// save the history
-			BufferedWriter output = new BufferedWriter(new FileWriter(dirName + "Output_Round_Record_" + mySeed + ".txt"));
+			BufferedWriter output = new BufferedWriter(
+					new FileWriter(dirName + "RoundRecord_" + formatted + "_" + mySeed + ".txt"));
 
 			output.write("ROUND RECORD\nDriver,Duration,Distance,Finish time\n");
 			for (Driver a : agents) {
@@ -611,25 +510,31 @@ public class EngD_MK_10 extends SimState {
 			}
 			output.close();
 
-			BufferedWriter output1 = new BufferedWriter(new FileWriter(dirName + "Output_Parcel_Record_" + mySeed + ".txt"));
-			output1.write("PARCEL RECORD\nLoad ID,Delivered to,Delivery time step,Load transferred from,Driver,Departure time step,LSOA\n");
-			
-			for(AidLoad al: loadsRecord) {
+			BufferedWriter output1 = new BufferedWriter(
+					new FileWriter(dirName + "ParcelRecord_" + formatted + "_" + mySeed + ".txt"));
+			output1.write(
+					"PARCEL RECORD\nLoad ID,Delivered to,Delivery time step,Load transferred from,Driver,Departure time step\n");
+			//output1.write(
+			//		"Load ID,Delivered to,Delivery time step,Load transferred from,Driver,Departure time step\\n");
+
+			for (AidLoad al : loadsRecord) {
 				output1.write(al.giveName() + "\t");
 				String pOutput = "";
-				for(int s = al.getHistory().size() - 1; s >= 0; s--)
+				for (int s = al.getHistory().size() - 1; s >= 0; s--)
 					pOutput += al.getHistory().get(s);
 				output1.write(pOutput + "\n");
 			}
 			output1.close();
-			
-			BufferedWriter output2 = new BufferedWriter(new FileWriter(dirName + "Output_Wards_Visited_" + mySeed + ".txt"));
+
+			BufferedWriter output2 = new BufferedWriter(
+					new FileWriter(dirName + "WardsVisited_" + formatted + "_" + mySeed + ".txt"));
 			output2.write("WARD VISITS\nLSOA,Num. Visits\n");
-			
-			for (MasonGeometry ward: visitedWardRecord.keySet()) {
-				output2.write(ward.getStringAttribute("LSOA_CODE") + "\t" + visitedWardRecord.get(ward) + "\n");
+			//output2.write("LSOA,Num. Visits\\n");
+
+			for (MasonGeometry ward : visitedWardRecord.keySet()) {
+				output2.write(ward.getStringAttribute("LSOA_NAME") + "\t" + visitedWardRecord.get(ward) + "\n");
 			}
-			
+
 			/*
 			 * for (AidParcel d : history) { for (String s : d.getHistory()) output.write(s
 			 * + "\n"); }
@@ -656,7 +561,10 @@ public class EngD_MK_10 extends SimState {
 		random = new MersenneTwisterFast(number);
 		mySeed = number;
 	}
-
+	
+	SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd");
+	String formatted = df.format(new Date());
+	
 	/**
 	 * /////////////// Main Function ///////////////
 	 * 
@@ -665,25 +573,25 @@ public class EngD_MK_10 extends SimState {
 	public static void main(String[] args) {
 
 		if (args.length < 0) {
-			System.out.println("usage error");
+			System.out.println("///////////////////////\nUSAGE ERROR!\n///////////////////////");
 			System.exit(0);
 		}
 
 		EngD_MK_10 EngD_MK_10 = new EngD_MK_10(System.currentTimeMillis());
 
-		System.out.println("Loading...");
+		System.out.println("Loading simulation...");
 
 		EngD_MK_10.start();
 
-		System.out.println("Running...");
+		System.out.println("Running simulation...");
 
-		for (int i = 0; i < 288 * 3; i++) {
+		for (int i = 0; i < 288 * 5; i++) {
 			EngD_MK_10.schedule.step(EngD_MK_10);
 		}
 
 		EngD_MK_10.finish();
 
-		System.out.println("...run finished");
+		System.out.println("...simulation run finished.");
 
 		System.exit(0);
 	}

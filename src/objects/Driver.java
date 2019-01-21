@@ -4,6 +4,11 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang.RandomStringUtils;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.linearref.LengthIndexedLine;
+
 import sim.EngD_MK_10;
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -14,12 +19,6 @@ import sim.util.geo.MasonGeometry;
 import swise.agents.TrafficAgent;
 import swise.objects.network.GeoNode;
 import swise.objects.network.ListEdge;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.linearref.LengthIndexedLine;
 
 public class Driver extends TrafficAgent implements Steppable, Burdenable {
 
@@ -151,16 +150,16 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 			double roundTime = world.schedule.getTime() - roundStartTime;
 			history.add(driverID + "\t" + roundTime + "\t" + roundDriveDistance + "\t" + state.schedule.getTime());
 			//System.out.println(this.toString() + " is done with the round! It took "
-			System.out.println(this.driverID + " is done with the round! It took "
-					+ (world.schedule.getTime() - roundStartTime));
+			//System.out.println(this.driverID + " is done with the round! It took "
+					//+ (world.schedule.getTime() - roundStartTime));
 			Bag b = world.depotLayer.getObjectsWithinDistance(geometry, world.resolution);
 			if (b.size() > 0) {
 				Headquarters d = (Headquarters) b.get(0);
 				d.enterDepot(this);
 				if (loads.size() > 0) {
-					System.out.println(
+					//System.out.println(
 							//"Round finished - driver " + this.toString() + " has returned with " + parcels.size());
-							"Round finished - " + this.driverID + " has returned with: " + loads.size() +" parcels.");
+							//"Round finished - " + this.driverID + " has returned with: " + loads.size() +" parcels.");
 					makeTransferTo(loads, d);
 				}
 			}
@@ -433,7 +432,6 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 	 */
 	public int headFor(Coordinate place) {
 
-		// TODO: MUST INCORPORATE ROAD NETWORK STUFF
 		if (place == null) {
 			System.out.println("ERROR: can't move toward nonexistant location");
 			return -1;

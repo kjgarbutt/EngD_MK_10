@@ -2,32 +2,22 @@ package sim;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Paint;
 
 import javax.swing.JFrame;
 
 import org.jfree.data.xy.XYSeries;
 
-import com.vividsolutions.jts.geom.Geometry;
-
-import sim.display.Console;
 import sim.display.Controller;
 import sim.display.Display2D;
 import sim.display.GUIState;
 import sim.engine.SimState;
-import sim.engine.Steppable;
 import sim.portrayal.DrawInfo2D;
 import sim.portrayal.geo.GeomPortrayal;
 import sim.portrayal.geo.GeomVectorFieldPortrayal;
-import sim.portrayal.grid.ObjectGridPortrayal2D;
-import sim.portrayal.grid.SparseGridPortrayal2D;
-import sim.portrayal.simple.OvalPortrayal2D;
 import sim.util.gui.ColorMap;
-import sim.util.gui.SimpleColorMap;
 import sim.util.media.chart.TimeSeriesChartGenerator;
 import swise.visualization.AttributePolyPortrayal;
 import swise.visualization.SegmentedColorMap;
-import sim.util.geo.MasonGeometry;
 
 public class EngD_MK_10WithUI extends GUIState {
 
@@ -87,7 +77,7 @@ public class EngD_MK_10WithUI extends GUIState {
 		super.start();
 
 		System.out.println();
-		System.out.println("...start()");
+		System.out.println("Starting simulation...");
 
 		setupPortrayals();
 	}
@@ -96,7 +86,7 @@ public class EngD_MK_10WithUI extends GUIState {
 	public void load(SimState state) {
 		super.load(state);
 
-		System.out.println("...load()");
+		System.out.println("Loading simulation...");
 
 		// we now have new grids. Set up the portrayals to reflect that
 		setupPortrayals();
@@ -106,7 +96,7 @@ public class EngD_MK_10WithUI extends GUIState {
 	public void setupPortrayals() {
 		EngD_MK_10 world = (EngD_MK_10) state;
 
-		System.out.println("...setupPortrayals()");
+		System.out.println("Setting up Model GUI...");
 
 		boundary.setField(world.baseLayer);
 		boundary.setPortrayalForAll(new GeomPortrayal(new Color(255, 150, 150, 50), 2, false));
@@ -246,7 +236,7 @@ public class EngD_MK_10WithUI extends GUIState {
 		// display.attach(osvi, "OSVI");
 		// display.attach(boundary, "County Outline");
 		// display.attach(floods2, "FZ2 Zone");
-		display.attach(polyPortrayal, "Polys");
+		display.attach(polyPortrayal, "OSVI");
 		display.attach(floods3, "FZ3 Zone");
 		display.attach(roads, "Roads");
 		display.attach(centroids, "Centroids");

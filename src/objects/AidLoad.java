@@ -84,7 +84,7 @@ public class AidLoad extends MobileAgent {
 			carryingUnit.removeLoad(this);
 			geometry = world.fa.createPoint(deliveryLocation);
 			world.deliveryLocationLayer.addGeometry(this);
-			history.add(targetCommunity.getStringAttribute("LSOA_CODE") + "\t" + world.schedule.getTime());
+			history.add(targetCommunity.getStringAttribute("LSOA_NAME") + "\t" + world.schedule.getTime());
 			// Target LSOA + Time Step
 			
 			status = 3; // delivered

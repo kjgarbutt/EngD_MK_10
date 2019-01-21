@@ -7,14 +7,12 @@ import java.util.HashMap;
 import com.vividsolutions.jts.geom.Coordinate;
 
 import comparators.AidLoadDistanceComparator;
-import comparators.AidLoadPriorityComparator;
 import sim.EngD_MK_10;
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.util.geo.MasonGeometry;
 import swise.agents.SpatialAgent;
 import swise.objects.network.GeoNode;
-import utilities.HeadquartersUtilities;
 
 public class Headquarters extends SpatialAgent implements Burdenable {
 
@@ -102,7 +100,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 	public int enterDepot(Driver d){
 		
 		//System.out.println("Driver: " + d.toString() + " has entered HQ!");
-		System.out.println(d.driverID + " has entered HQ!");
+		//System.out.println(d.driverID + " has entered HQ!");
 		
 		if(rounds.size() == 0)
 			return -1; // finished with everything
@@ -159,7 +157,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 						al.transfer(d);
 					d.updateRound();
 					
-					System.out.println(d.driverID + " has taken on a new consignment: " + newRound.toArray().toString());
+					//System.out.println(d.driverID + " has taken on a new consignment: " + newRound.toArray().toString());
 						// prints: [Ljava.lang.Object;@1d9fe5c1
 					leaveDepot(d);
 					d.startRoundClock();
@@ -200,7 +198,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 		// for each load, create a new object. Future examples can have multiple loads per round!
 		this.rounds = new ArrayList <ArrayList <AidLoad>> ();
 		
-//		AidLoadPriorityComparator alpc = new AidLoadPriorityComparator();
+		// AidLoadPriorityComparator alpc = new AidLoadPriorityComparator();
 		AidLoadDistanceComparator alpc = new AidLoadDistanceComparator(this);
 		Collections.sort(loads, alpc);
 		

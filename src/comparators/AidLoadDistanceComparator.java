@@ -6,7 +6,7 @@ import objects.AidLoad;
 import sim.util.geo.MasonGeometry;
 
 /**
- * Orders in terms of decreasing priority
+ * Orders in terms of increasing distance from HQ/Depot
  * 
  * @author KJGarbutt
  *

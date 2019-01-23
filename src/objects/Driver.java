@@ -93,17 +93,17 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 				// attempt delivery
 			if (world.random.nextDouble() < world.probFailedDelivery) { // failed delivery ):
 				index++;
-		/*		System.out.println(
+				System.out.println(
 						//this.toString() + " has NOT been able to deliver parcel to:" + currentDelivery.toString());
 						this.driverID + " has NOT been able to deliver parcel to: " + currentDelivery.toString());
 						//this.driverID + " has NOT been able to deliver parcel to:" + currentDelivery.getAttribute("id"));
-		*/	} else { // successful delivery! :)
+			} else { // successful delivery! :)
 				currentDelivery.deliver();
 				myRound.remove(currentDelivery);
-		/*		System.out.println(
+				//System.out.println(
 						//this.toString() + " has delivered the parcel to:" + currentDelivery.toString());
-						this.driverID + " has delivered the parcel to: " + currentDelivery.toString());
-		*///		currentDelivery.geometry = world.fa.createPoint(currentDelivery.deliveryLocation);
+						//this.driverID + " has delivered the parcel to: " + currentDelivery.toString());
+		//		currentDelivery.geometry = world.fa.createPoint(currentDelivery.deliveryLocation);
 		//		world.deliveryLocationLayer.addGeometry(currentDelivery);
 				
 			}

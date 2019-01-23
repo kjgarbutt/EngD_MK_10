@@ -75,9 +75,9 @@ public class EngD_MK_10 extends SimState {
 	public static int deliveryTime = 5; // 1 = 5 minutes
 	public static int approxManifestSize = 100; // 100 'units' per vehicle
 
-	public static int numMaxAgents = 10;
-	public static int numMaxLoads = 1000;
-	public static int numBays = 10;
+	public static int numMaxAgents = 25;
+	public static int numMaxLoads = 10000;
+	public static int numBays = 35;
 	public static double probFailedDelivery = .0;
 
 	/////////////// Data Sources ///////////////
@@ -177,13 +177,23 @@ public class EngD_MK_10 extends SimState {
 			// GeomVectorFieldPortrayal polyPortrayal = new GeomVectorFieldPortrayal(true);
 			// // for OSVI viz.
 			GeomVectorField dummyDepotLayer = new GeomVectorField(grid_width, grid_height);
-			InputCleaning.readInVectorLayer(centroidsLayer,
-					dirName + "Gloucestershire_Centroids_with_Road_ID_Households.shp", "Centroids", new Bag()); // Delivery
+			//InputCleaning.readInVectorLayer(centroidsLayer,
+			//		dirName + "Gloucestershire_Centroids_with_Road_ID_Households.shp", "Centroids", new Bag()); // Delivery
 																												// locations
-			InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "BRC_HQ_GL.shp", "Depots", new Bag());
-			InputCleaning.readInVectorLayer(headquartersLayer, dirName + "BRC_HQ_GL.shp", "HQ", new Bag()); // Shows HQ
-			InputCleaning.readInVectorLayer(roadLayer, dirName + "GL_ITN_MultipartToSinglepart.shp", "Road Network",
+			InputCleaning.readInVectorLayer(centroidsLayer,
+					dirName + "GL_Centroids_MovedForModel.shp", "Centroids", new Bag()); // Delivery locations
+			
+			//InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "BRC_HQ_GL.shp", "Depots", new Bag());
+			//InputCleaning.readInVectorLayer(headquartersLayer, dirName + "BRC_HQ_GL.shp", "HQ", new Bag()); // Shows HQ
+			
+			InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "BRC_HQ_GL_2.shp", "Depots", new Bag());
+			InputCleaning.readInVectorLayer(headquartersLayer, dirName + "BRC_HQ_GL_2.shp", "HQ", new Bag()); // Shows HQ
+			
+			//InputCleaning.readInVectorLayer(roadLayer, dirName + "GL_ITN_MultipartToSinglepart.shp", "Road Network",
+			//		new Bag());
+			InputCleaning.readInVectorLayer(roadLayer, dirName + "GL_ITN_MultipartToSinglepart1s2s3s.shp", "Road Network",
 					new Bag());
+			
 			InputCleaning.readInVectorLayer(osviLayer, dirName + "GloucestershireFinal_LSOA1.shp", "OSVI", new Bag());
 			InputCleaning.readInVectorLayer(boundaryLayer, dirName + "Gloucestershire_Boundary_Line.shp",
 					"County Boundary", new Bag());

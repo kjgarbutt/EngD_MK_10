@@ -6,6 +6,8 @@ import java.util.HashMap;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
+import comparators.AidLoadDistanceComparator;
+import comparators.AidLoadOSVIComparator;
 import comparators.AidLoadPriorityComparator;
 import sim.EngD_MK_10;
 import sim.engine.SimState;
@@ -198,8 +200,13 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 		// for each load, create a new object. Future examples can have multiple loads per round!
 		this.rounds = new ArrayList <ArrayList <AidLoad>> ();
 		
-		AidLoadPriorityComparator alpc = new AidLoadPriorityComparator();
-		//AidLoadDistanceComparator alpc = new AidLoadDistanceComparator(this);
+		///////////////////////////////////////////////////
+		//// THIS IS WHERE THE STRATEGIES ARE SELECTED ////
+		///////////////////////////////////////////////////
+		//AidLoadRandomComparator alpc = new AidLoadRandomComparator();	//Chooses a random LSOA
+		//AidLoadPriorityComparator alpc = new AidLoadPriorityComparator();	//Chooses LSOA with highest Priority Resident rating
+		AidLoadOSVIComparator alpc = new AidLoadOSVIComparator();	//Chooses LSOA with highest OSVI rating
+		//AidLoadDistanceComparator alpc = new AidLoadDistanceComparator(this);	// Chooses closest LSOA to HQ
 		Collections.sort(loads, alpc);
 		
 		for(AidLoad al: loads) {

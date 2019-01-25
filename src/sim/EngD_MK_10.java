@@ -432,7 +432,7 @@ public class EngD_MK_10 extends SimState {
 				Coordinate myCoordinate = deliveryLoc.getCoordinate();
 
 				if (!MBR.contains(myCoordinate)) {
-					System.out.println("myCoordinate is in MBR");
+					System.out.println("myCoordinate is NOT in MBR!");
 					i--;
 					continue;
 				}

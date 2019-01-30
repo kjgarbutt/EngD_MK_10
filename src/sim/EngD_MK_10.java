@@ -67,17 +67,29 @@ public class EngD_MK_10 extends SimState {
 	public static int grid_width = 970;
 	public static int grid_height = 620;
 	public static double resolution = 5;
-	// the granularity of the simulation (fiddle around with this to merge nodes into one another)
+	// the granularity of the simulation (fiddle around with this to merge nodes
+	// into one another)
 
 	public static double speed_vehicle = 1000; // approximately 30MPH
 
-	public static int loadingTime = 3; // 1 = 5 minutes
-	public static int deliveryTime = 5; // 1 = 5 minutes
-	public static int approxManifestSize = 100; // 100 'units' per vehicle
+	public static int loadingTime = 6; // 1 = 5 minutes
+	public static int deliveryTime = 6; // 1 = 5 minutes
+	public static int approxManifestSize = 4; // Sandbags. 6 per household. 24 per load/car
+	// public static int approxManifestSize = 10; // Water+Blanket Combo. 1
+	// 24-pack+3 blankets per household. 10 per load/car
+	// public static int approxManifestSize = 15; // Water+Cleaning Kit Combo. 1
+	// 24-pack+1 Cleaning Kit per household. 15 per load/car
+	// public static int approxManifestSize = 20; // Water. 1 24-pack per household.
+	// 20 per load/car
+	// public static int approxManifestSize = 40; // Blankets. 3 per household. 120
+	// per load/car
+	// public static int approxManifestSize = 50; // Cleaning kits. 1 per household.
+	// 50 per load/car
+	// public static int approxManifestSize = 1000; // TEST
 
-	public static int numMaxAgents = 25;
+	public static int numMaxAgents = 10;
 	public static int numMaxLoads = 10000;
-	public static int numBays = 35;
+	public static int numBays = 10;
 	public static double probFailedDelivery = .0;
 
 	/////////////// Data Sources ///////////////
@@ -177,23 +189,27 @@ public class EngD_MK_10 extends SimState {
 			// GeomVectorFieldPortrayal polyPortrayal = new GeomVectorFieldPortrayal(true);
 			// // for OSVI viz.
 			GeomVectorField dummyDepotLayer = new GeomVectorField(grid_width, grid_height);
-			//InputCleaning.readInVectorLayer(centroidsLayer,
-			//		dirName + "Gloucestershire_Centroids_with_Road_ID_Households.shp", "Centroids", new Bag()); // Delivery
-																												// locations
-			InputCleaning.readInVectorLayer(centroidsLayer,
-					dirName + "GL_Centroids_MovedForModel.shp", "Centroids", new Bag()); // Delivery locations
-			
-			//InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "BRC_HQ_GL.shp", "Depots", new Bag());
-			//InputCleaning.readInVectorLayer(headquartersLayer, dirName + "BRC_HQ_GL.shp", "HQ", new Bag()); // Shows HQ
-			
-			InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "BRC_HQ_GL_2.shp", "Depots", new Bag());
-			InputCleaning.readInVectorLayer(headquartersLayer, dirName + "BRC_HQ_GL_2.shp", "HQ", new Bag()); // Shows HQ
-			
-			//InputCleaning.readInVectorLayer(roadLayer, dirName + "GL_ITN_MultipartToSinglepart.shp", "Road Network",
-			//		new Bag());
-			InputCleaning.readInVectorLayer(roadLayer, dirName + "GL_ITN_MultipartToSinglepart1s2s3s.shp", "Road Network",
-					new Bag());
-			
+			// InputCleaning.readInVectorLayer(centroidsLayer,
+			// dirName + "Gloucestershire_Centroids_with_Road_ID_Households.shp",
+			// "Centroids", new Bag()); // Delivery
+			// locations
+			InputCleaning.readInVectorLayer(centroidsLayer, dirName + "GL_Centroids_MovedForModel.shp", "Centroids",
+					new Bag()); // ALL DELIVERY LOCATIONS FOR GL_ITN_MultipartToSinglepart1s2s3s.shp
+
+			InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "BRC_HQ_GL.shp", "Depots", new Bag());
+			InputCleaning.readInVectorLayer(headquartersLayer, dirName + "BRC_HQ_GL.shp", "HQ", new Bag()); // Shows HQ
+
+			// InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "BRC_HQ_GL_2.shp",
+			// "Depots", new Bag()); // TWO BRC DEPOTS IN GL
+			// InputCleaning.readInVectorLayer(headquartersLayer, dirName +
+			// "BRC_HQ_GL_2.shp", "HQ", new Bag()); // Shows HQ
+
+			// InputCleaning.readInVectorLayer(roadLayer, dirName +
+			// "GL_ITN_MultipartToSinglepart.shp", "Road Network",
+			// new Bag()); // FULL, NON-FLOODED ROAD NETWORK
+			InputCleaning.readInVectorLayer(roadLayer, dirName + "GL_ITN_MultipartToSinglepart1s2s3s.shp",
+					"Road Network", new Bag()); // NO MAJOR FLOODED ROADS
+
 			InputCleaning.readInVectorLayer(osviLayer, dirName + "GloucestershireFinal_LSOA1.shp", "OSVI", new Bag());
 			InputCleaning.readInVectorLayer(boundaryLayer, dirName + "Gloucestershire_Boundary_Line.shp",
 					"County Boundary", new Bag());
@@ -287,7 +303,7 @@ public class EngD_MK_10 extends SimState {
 			baseLayer.setMBR(MBR);
 			boundaryLayer.setMBR(MBR);
 
-			//System.out.print("done");
+			// System.out.print("done");
 
 			//////////////////////////////////////////////
 			////////////////// AGENTS ////////////////////
@@ -320,7 +336,7 @@ public class EngD_MK_10 extends SimState {
 
 		for (Object o : depots) {
 			MasonGeometry mg = (MasonGeometry) o;
-			//int numbays = mg.getIntegerAttribute("loadbays");
+			// int numbays = mg.getIntegerAttribute("loadbays");
 			GeoNode gn = snapPointToNode(mg.geometry.getCoordinate());
 
 			Headquarters d = new Headquarters(gn.geometry.getCoordinate(), numBays, this);
@@ -405,14 +421,7 @@ public class EngD_MK_10 extends SimState {
 
 	public void generateLoads(Headquarters d) {
 		System.out.println("Generating parcels...");
-		//System.out.print("done");
-
-		/////////////////////////////////////////////////////////////
-		///////////////// HASHMAP FUN TIMES /////////////////////////
-		/////////////////////////////////////////////////////////////
-
-		// https://coderanch.com/t/631749/java/arraylist-index-items-hashmap-key
-		// https://www.geeksforgeeks.org/traverse-through-a-hashmap-in-java/
+		// System.out.print("done");
 
 		ArrayList<AidLoad> myLoads = new ArrayList<AidLoad>();
 		Bag centroidGeoms = centroidsLayer.getGeometries();
@@ -424,7 +433,8 @@ public class EngD_MK_10 extends SimState {
 			MasonGeometry myCentroid = (MasonGeometry) o;
 			int households = myCentroid.getIntegerAttribute("Households");
 
-			// create a number of loads based on the number of households + 1 to cover any stragglers
+			// create a number of loads based on the number of households + 1 to cover any
+			// stragglers
 			int numLoads = households / approxManifestSize + 1;
 			for (int i = 0; i < numLoads; i++) {
 
@@ -447,7 +457,7 @@ public class EngD_MK_10 extends SimState {
 	}
 
 	int getMostVulnerableUnassignedWard() {
-		//System.out.println("\nGetting unassigned LSOA with highest OSVI ratings...");
+		// System.out.println("\nGetting unassigned LSOA with highest OSVI ratings...");
 		Bag centroidGeoms = centroidsLayer.getGeometries();
 
 		int highestOSVI = -1;
@@ -481,16 +491,12 @@ public class EngD_MK_10 extends SimState {
 			return -1; // no ID to find if myCopy is null, so just return a fake value
 		}
 
-		///////////////////////////////////////////////////////////
-		////// TODO HOW TO STOP myCopy ENDING UP AT NULL??? ///////
-		///////////////////////////////////////////////////////////
-
 		int id = myCopy.getIntegerAttribute("ID"); // Here, id changes to the highestOSVI
 		assignedWards.add(id); // add ID to the "assignedWards" ArrayList
 		System.out.println("\tHighest OSVI Raiting is: " + myCopy.getIntegerAttribute("L_GL_OSVI_") + " for: "
 				+ myCopy.getStringAttribute("LSOA_NAME") + " (ward ID: " + myCopy.getIntegerAttribute("ID") + ")"
 				+ " and it has " + myCopy.getIntegerAttribute("Households") + " households that may need assistance.");
-		System.out.println("\t\tCurrent list of most vulnerable unassigned wards: " + assignedWards); 
+		System.out.println("\t\tCurrent list of most vulnerable unassigned wards: " + assignedWards);
 		// Prints out: the ID for the highestOSVI
 		return myCopy.getIntegerAttribute("ROAD_ID"); // TODO: ID instead?
 	}
@@ -513,7 +519,9 @@ public class EngD_MK_10 extends SimState {
 			BufferedWriter output = new BufferedWriter(
 					new FileWriter(dirName + "RoundRecord_" + formatted + "_" + mySeed + ".txt"));
 
-			output.write("ROUND RECORD\nDriver,Duration,Distance,Finish time\n");
+			output.write("ROUND RECORD: " + "# Drivers: " + numMaxAgents + "; " + "# Bays: " + numBays + "; "
+					+ "Loading Time: " + loadingTime + "; " + "Delivery Time: " + deliveryTime + "; "
+					+ "Manifest Size: " + approxManifestSize + "\nDriver,Duration,Distance,Finish time\n");
 			for (Driver a : agents) {
 				for (String s : a.getHistory())
 					output.write(s + "\n");
@@ -522,10 +530,13 @@ public class EngD_MK_10 extends SimState {
 
 			BufferedWriter output1 = new BufferedWriter(
 					new FileWriter(dirName + "ParcelRecord_" + formatted + "_" + mySeed + ".txt"));
-			output1.write(
-					"PARCEL RECORD\nLoad ID,Delivered to,Delivery time step,Load transferred from,Driver,Departure time step\n");
-			//output1.write(
-			//		"Load ID,Delivered to,Delivery time step,Load transferred from,Driver,Departure time step\\n");
+			output1.write("PARCEL RECORD: " + "# Drivers: " + numMaxAgents + "; " + "# Bays: " + numBays + "; "
+					+ "Loading Time: " + loadingTime + "; " + "Delivery Time: " + deliveryTime + "; "
+					+ "Manifest Size: " + approxManifestSize
+					+ "\nLoad ID,Delivered to,Delivery time step,Load transferred from,Driver,Departure time step\n");
+			// output1.write(
+			// "Load ID,Delivered to,Delivery time step,Load transferred
+			// from,Driver,Departure time step\\n");
 
 			for (AidLoad al : loadsRecord) {
 				output1.write(al.giveName() + "\t");
@@ -538,8 +549,10 @@ public class EngD_MK_10 extends SimState {
 
 			BufferedWriter output2 = new BufferedWriter(
 					new FileWriter(dirName + "WardsVisited_" + formatted + "_" + mySeed + ".txt"));
-			output2.write("WARD VISITS\nLSOA,Num. Visits\n");
-			//output2.write("LSOA,Num. Visits\\n");
+			output2.write("WARDS VISITED: " + "# Drivers: " + numMaxAgents + "; " + "# Bays: " + numBays + "; "
+					+ "Loading Time: " + loadingTime + "; " + "Delivery Time: " + deliveryTime + "; "
+					+ "Manifest Size: " + approxManifestSize + "\nLSOA,Num. Visits\n");
+			// output2.write("LSOA,Num. Visits\\n");
 
 			for (MasonGeometry ward : visitedWardRecord.keySet()) {
 				output2.write(ward.getStringAttribute("LSOA_NAME") + "\t" + visitedWardRecord.get(ward) + "\n");
@@ -571,10 +584,10 @@ public class EngD_MK_10 extends SimState {
 		random = new MersenneTwisterFast(number);
 		mySeed = number;
 	}
-	
+
 	SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd");
 	String formatted = df.format(new Date());
-	
+
 	/**
 	 * /////////////// Main Function ///////////////
 	 * 

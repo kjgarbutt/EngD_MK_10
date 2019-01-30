@@ -18,6 +18,16 @@ import sim.util.geo.MasonGeometry;
 public class AidLoadRandomComparator implements Comparator<AidLoad> {
 
 	// Get random ward from the Centroid geomoetry
+	//
+	// Create your list of parcels as well as a new, 
+	// empty list of parcels. For n = number of parcels 
+	// in the first list, randomly pick a number x between 
+	// 0 and n, exclusive. Take the xth parcel from the 
+	// first list and add it to the end of the second. 
+	// Repeat this until the first list is empty. The 
+	// second list should be a (fairly naively) randomised 
+	// ordering of the parcels from the first.
+	
 	
 	@Override
 	public int compare(AidLoad o1, AidLoad o2) {

@@ -89,23 +89,28 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 		// if you're in the process of delivering it, proceed
 		if (currentDelivery != null && this.geometry.distance(currentDelivery.geometry) <= world.resolution) {
 
-		// 	if you've arrived at the delivery point, try to deliver the parcel!
-				// attempt delivery
+			// if you've arrived at the delivery point, try to deliver the parcel!
+			// attempt delivery
 			if (world.random.nextDouble() < world.probFailedDelivery) { // failed delivery ):
 				index++;
 				System.out.println(
-						//this.toString() + " has NOT been able to deliver parcel to:" + currentDelivery.toString());
+						// this.toString() + " has NOT been able to deliver parcel to:" +
+						// currentDelivery.toString());
 						this.driverID + " has NOT been able to deliver parcel to: " + currentDelivery.toString());
-						//this.driverID + " has NOT been able to deliver parcel to:" + currentDelivery.getAttribute("id"));
+				// this.driverID + " has NOT been able to deliver parcel to:" +
+				// currentDelivery.getAttribute("id"));
 			} else { // successful delivery! :)
 				currentDelivery.deliver();
 				myRound.remove(currentDelivery);
-				//System.out.println(
-						//this.toString() + " has delivered the parcel to:" + currentDelivery.toString());
-						//this.driverID + " has delivered the parcel to: " + currentDelivery.toString());
-		//		currentDelivery.geometry = world.fa.createPoint(currentDelivery.deliveryLocation);
-		//		world.deliveryLocationLayer.addGeometry(currentDelivery);
-				
+				// System.out.println(
+				// this.toString() + " has delivered the parcel to:" +
+				// currentDelivery.toString());
+				// this.driverID + " has delivered the parcel to: " +
+				// currentDelivery.toString());
+				// currentDelivery.geometry =
+				// world.fa.createPoint(currentDelivery.deliveryLocation);
+				// world.deliveryLocationLayer.addGeometry(currentDelivery);
+
 			}
 
 			world.schedule.scheduleOnce(time + world.deliveryTime, this);
@@ -114,7 +119,6 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 
 			return;
 		}
-
 
 		// if you're still moving, keep moving
 		else if (path != null) {
@@ -128,9 +132,9 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 
 			AidLoad nextLoad = loads.get(index);
 			currentDelivery = nextLoad;
-			if(geometry.getCoordinate().distance(nextLoad.deliveryLocation) > world.resolution) {
+			if (geometry.getCoordinate().distance(nextLoad.deliveryLocation) > world.resolution) {
 				headFor(nextLoad.deliveryLocation);
-				roundDriveDistance += calculateDistance(path);				
+				roundDriveDistance += calculateDistance(path);
 			}
 			world.schedule.scheduleOnce(this);
 			return;
@@ -149,17 +153,19 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 
 			double roundTime = world.schedule.getTime() - roundStartTime;
 			history.add(driverID + "\t" + roundTime + "\t" + roundDriveDistance + "\t" + state.schedule.getTime());
-			//System.out.println(this.toString() + " is done with the round! It took "
-			//System.out.println(this.driverID + " is done with the round! It took "
-					//+ (world.schedule.getTime() - roundStartTime));
+			// System.out.println(this.toString() + " is done with the round! It took "
+			// System.out.println(this.driverID + " is done with the round! It took "
+			// + (world.schedule.getTime() - roundStartTime));
 			Bag b = world.depotLayer.getObjectsWithinDistance(geometry, world.resolution);
 			if (b.size() > 0) {
 				Headquarters d = (Headquarters) b.get(0);
 				d.enterDepot(this);
 				if (loads.size() > 0) {
-					//System.out.println(
-							//"Round finished - driver " + this.toString() + " has returned with " + parcels.size());
-							//"Round finished - " + this.driverID + " has returned with: " + loads.size() +" parcels.");
+					// System.out.println(
+					// "Round finished - driver " + this.toString() + " has returned with " +
+					// parcels.size());
+					// "Round finished - " + this.driverID + " has returned with: " + loads.size()
+					// +" parcels.");
 					makeTransferTo(loads, d);
 				}
 			}
@@ -216,7 +222,7 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 	public boolean makeTransferTo(Object o, Burdenable b) {
 		try {
 			if (o instanceof ArrayList) {
-				for(AidLoad x: (ArrayList <AidLoad>) o)
+				for (AidLoad x : (ArrayList<AidLoad>) o)
 					x.transfer(b);
 			} else {
 				((AidLoad) o).transfer(b);
@@ -291,8 +297,7 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 			}
 
 			// if we have arrived and there is no other edge in the path, we have finished
-			// our journey:
-			// reset the path and return the remaining time
+			// our journey: reset the path and return the remaining time
 			if (goalPoint == null && path.size() == 0 && (currentIndex <= startIndex || currentIndex >= endIndex)) {
 				path = null;
 				return time;
@@ -362,10 +367,8 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 		if (edge != null && edge.getClass().equals(ListEdge.class)) {
 
 			// Each car has a certain amount of space: wants to preserve a following
-			// distance.
-			// If the amount of following distance is less than 20 meters (~ 6 car lengths)
-			// it'll slow
-			// proportionately
+			// distance. If the amount of following distance is less than 20 meters 
+			// (~ 6 car lengths) it'll slow proportionately
 			double val = ((ListEdge) edge).lengthPerElement() / 5;
 			if (val < 10 && this.speed == EngD_MK_10.speed_vehicle) {
 				speed = mySpeed / val;// minSpeed);
@@ -447,7 +450,6 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 		}
 
 		// FINDING THE GOAL //////////////////
-
 		// set up goal information
 		targetDestination = world.snapPointToRoadNetwork(place);
 
@@ -458,8 +460,7 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 		}
 
 		// be sure that if the target location is not a node but rather a point along an
-		// edge, that
-		// point is recorded
+		// edge, that point is recorded
 		if (destinationNode.geometry.getCoordinate().distance(targetDestination) > world.resolution)
 			goalPoint = targetDestination;
 		else
@@ -475,10 +476,8 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 		}
 
 		// CHECK FOR BEGINNING OF PATH ////////
-
 		// we want to be sure that we're situated on the path *right now*, and that if
-		// the path
-		// doesn't include the link we're on at this moment that we're both
+		// the path doesn't include the link we're on at this moment that we're both
 		// a) on a link that connects to the startNode
 		// b) pointed toward that startNode
 		// Then, we want to clean up by getting rid of the edge on which we're already
@@ -497,15 +496,11 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 		// reset stuff
 		if (path.size() == 0 && targetDestination.distance(geometry.getCoordinate()) > world.resolution) {
 			path.add(edge);
-			node = (GeoNode) edge.getOtherNode(node); // because it will look for the other side in the navigation!!!
-														// Tricky!!
+			node = (GeoNode) edge.getOtherNode(node);
 		}
 
 		// CHECK FOR END OF PATH //////////////
 
-		// we want to be sure that if the goal point exists and the Agent isn't already
-		// on the edge
-		// that contains it, the edge that it's on is included in the path
 		if (goalPoint != null) {
 
 			ListEdge myLastEdge = world.getClosestEdge(goalPoint, world.resolution, world.networkEdgeLayer, world.fa);
@@ -555,7 +550,7 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 	public ArrayList<String> getHistory() {
 		return history;
 	}
-	
+
 	public String giveName() {
 		return this.driverID;
 	}

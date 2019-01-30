@@ -8,32 +8,32 @@ package sim;
  */
 
 public class ScenarioRunner {
-	
-	public static void main(String [] args) {
-		
-		for(int x = 0; x < 10; x++) {
-			
+
+	public static void main(String[] args) {
+
+		for (int x = 0; x < 10; x++) {
+
 			EngD_MK_10 dummySim = new EngD_MK_10(System.currentTimeMillis());
 
 			System.out.println("///////////////////////\nNEW RUN..." + x + "\n///////////////////////");
-			//System.out.println("NEW RUN..." + x);
+			// System.out.println("NEW RUN..." + x);
 			System.out.println("///////////////////////\nLOADING...\n///////////////////////");
-			//System.out.println("Loading...");
+			// System.out.println("Loading...");
 
 			dummySim.start();
 
 			System.out.println("///////////////////////\nRUNNING...\n///////////////////////");
-			//System.out.println("Running...");
+			// System.out.println("Running...");
 
-			while(!dummySim.schedule.scheduleComplete() && dummySim.schedule.getTime() < 288 * 3) {
+			while (!dummySim.schedule.scheduleComplete() && dummySim.schedule.getTime() < 288 * 3) {
 				dummySim.schedule.step(dummySim);
 			}
 
 			dummySim.finish();
 
 			System.out.println("///////////////////////\n...RUN FINISHED\n///////////////////////");
-			//System.out.println("...run finished");
+			// System.out.println("...run finished");
 		}
-		
+
 	}
 }

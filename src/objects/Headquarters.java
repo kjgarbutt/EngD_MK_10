@@ -3,6 +3,7 @@ package objects;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Random;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -23,7 +24,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 	GeoNode myNode = null;
 
 	ArrayList<AidLoad> loads;
-	ArrayList<ArrayList<AidLoad>> rounds; // TODO extend upon meeee for great glory
+	ArrayList<ArrayList<AidLoad>> rounds; // TODO extend upon this!
 
 	int numBays;
 	ArrayList<Driver> inBays;
@@ -135,6 +136,18 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 			return rounds.remove(0);
 	}
 
+	////////////////////////////////////////////////////
+	//// THIS IS TO SELECT ROUNDS IN A RANDOM ORDER ////
+	//// AND IS SUPER LAZY! BUT WORKS! ////////////////
+	////////////////////////////////////////////////////
+	// ArrayList<AidLoad> getNextRandomRound() {
+	// int n = rounds.size();
+	// if (n <= 0)
+	// return null;
+	// else
+	// return rounds.remove(random.nextInt(n));
+	// }
+
 	void enterBay(Driver d) {
 		inBays.add(d);
 		if (rounds.size() <= 0)
@@ -146,7 +159,8 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 				@Override
 				public void step(SimState state) {
 					ArrayList<AidLoad> newRound = getNextRound();
-					if(newRound == null) return; // force it to go back, it’s got nothing to do here!!
+					if (newRound == null)
+						return; // force it to go back, it’s got nothing to do here!!
 					// update record of visits!
 					// TODO THIS ASSUMES ONLY ONE LOAD PER VEHICLE, and also assumes you're gonna
 					// make it!!
@@ -179,7 +193,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 	 *            the Driver to remove from the Depot
 	 */
 	public void leaveDepot(Driver d) {
-
+		
 		// if the Driver was originally there, remove it
 		if (inBays.contains(d)) {
 			inBays.remove(d);
@@ -210,15 +224,16 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 		///////////////////////////////////////////////////
 		//// THIS IS WHERE THE STRATEGIES ARE SELECTED ////
 		///////////////////////////////////////////////////
-		// AidLoadRandomComparator alpc = new AidLoadRandomComparator(); //Chooses a
-		/////////////////////////////////////////////////// random LSOA
-		// AidLoadPriorityComparator alpc = new AidLoadPriorityComparator(); //Chooses
-		/////////////////////////////////////////////////// LSOA with highest Priority
-		/////////////////////////////////////////////////// Resident rating
-		AidLoadOSVIComparator alpc = new AidLoadOSVIComparator(); // Chooses LSOA with highest OSVI rating
-		// AidLoadDistanceComparator alpc = new AidLoadDistanceComparator(this); //
+		// Chooses LSOA with highest Priority Resident rating
+		// AidLoadPriorityComparator alpc = new AidLoadPriorityComparator();
+		// Chooses LSOA with highest OSVI rating
+		AidLoadOSVIComparator alpc = new AidLoadOSVIComparator();
 		// Chooses closest LSOA to HQ
-		Collections.sort(loads, alpc);
+		// AidLoadDistanceComparator alpc = new AidLoadDistanceComparator(this);
+		Collections.sort(loads, alpc); // THIS MUST BE ON FOR ABOVE SCENARIOS
+		// Comment out the above and use the following to choose
+		// loads in a random order
+		// Collections.shuffle(loads);
 
 		for (AidLoad al : loads) {
 			ArrayList<AidLoad> dummyLoadWrapper = new ArrayList<AidLoad>();

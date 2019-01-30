@@ -16,10 +16,13 @@ public class AidLoadOSVIComparator implements Comparator<AidLoad> {
 	public int compare(AidLoad o1, AidLoad o2) {
 		int o1_priority = o1.getTargetCommunity().getIntegerAttribute("N_GL_OSV_1");
 		int o2_priority = o2.getTargetCommunity().getIntegerAttribute("N_GL_OSV_1");
-		if(o1_priority == o2_priority) return 0;
-		else if(o1_priority < o2_priority) return 1;
-		//else if(o1_priority > o2_priority) return 1; // REVERESED FOR TESTING
-		else return -1;
+		if (o1_priority == o2_priority)
+			return 0;
+		else if (o1_priority < o2_priority)
+			return 1;
+		// else if(o1_priority > o2_priority) return 1; // REVERESED FOR TESTING
+		else
+			return -1;
 	}
-	
+
 }

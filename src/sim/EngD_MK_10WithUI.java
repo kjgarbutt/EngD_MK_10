@@ -127,11 +127,11 @@ public class EngD_MK_10WithUI extends GUIState {
 
 		headquarters.setField(world.headquartersLayer);
 		headquarters.setPortrayalForAll(new GeomPortrayal(Color.BLACK, 200, true));
-
-		polyPortrayal.setField(world.world);
-        polyPortrayal.setPortrayalForAll(new PolyPortrayal());
-        polyPortrayal.setImmutableField(true);
 		
+		polyPortrayal.setField(world.world);
+		polyPortrayal.setPortrayalForAll(new PolyPortrayal());
+		polyPortrayal.setImmutableField(true);
+
 		deliveryLocations.setField(world.deliveryLocationLayer);
 		double[] levels = new double[100];
 		Color[] colors = new Color[100];
@@ -162,7 +162,7 @@ public class EngD_MK_10WithUI extends GUIState {
 	 * portrayal used to display Polygons with the appropriate color
 	 */
 	class PolyPortrayal extends GeomPortrayal {
-		
+
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -204,19 +204,19 @@ public class EngD_MK_10WithUI extends GUIState {
 	 * state.schedule.scheduleRepeating(new Steppable() { private static final long
 	 * serialVersionUID = -3749005402522867098L;
 	 * 
-	 * public void step(SimState state) { sim.MK_10 world = (sim.MK_10) state; double
-	 * maxS = 0, minS = 10000, avgS = 0, count = 0; ////////////////////////////
-	 * Main Agent ////////////////////// for (Agent a : world.agentList) { if
-	 * (a.distributing) { continue; } count++; double speed = Math.abs(a.speed);
-	 * avgS += speed; if (speed > maxS) { maxS = speed; } if (speed < minS) { minS =
-	 * speed; } }
+	 * public void step(SimState state) { sim.MK_10 world = (sim.MK_10) state;
+	 * double maxS = 0, minS = 10000, avgS = 0, count = 0;
+	 * //////////////////////////// Main Agent ////////////////////// for (Agent a :
+	 * world.agentList) { if (a.distributing) { continue; } count++; double speed =
+	 * Math.abs(a.speed); avgS += speed; if (speed > maxS) { maxS = speed; } if
+	 * (speed < minS) { minS = speed; } }
 	 * 
 	 * double time = state.schedule.time(); avgS /= count; maxSpeed.add(time, maxS,
 	 * true); minSpeed.add(time, minS, true); avgSpeed.add(time, avgS, true); } }
 	 * 
 	 * }
 	 */
-	
+
 	/**
 	 * Visualisation Format
 	 * 
@@ -260,8 +260,8 @@ public class EngD_MK_10WithUI extends GUIState {
 	}
 
 	/**
-	 * /////////////// Model Finish /////////////// 
-	 * Quits the simulation and cleans up.
+	 * /////////////// Model Finish /////////////// Quits the simulation and cleans
+	 * up.
 	 */
 	public void quit() {
 		System.out.println("Model closed.");
@@ -284,8 +284,8 @@ public class EngD_MK_10WithUI extends GUIState {
 
 	public static void main(String[] args) {
 		(new EngD_MK_10WithUI()).createController();
-		//EngD_MK_10WithUI worldGUI = new EngD_MK_10WithUI();
-        //Console console = new Console(worldGUI);
-        //console.setVisible(true);
+		// EngD_MK_10WithUI worldGUI = new EngD_MK_10WithUI();
+		// Console console = new Console(worldGUI);
+		// console.setVisible(true);
 	}
 }

@@ -26,54 +26,53 @@ import utilities.InputCleaning;
 import swise.objects.PopSynth;
 
 public class DriverUtilities {
-	
-	public static synchronized ArrayList<Driver> setupDriversAtRandom(GeomVectorField buildings, EngD_MK_10 world, 
-			GeometryFactory fa, int numDrivers){
-		
-		ArrayList <Driver> agents = new ArrayList <Driver> ();
+
+	public static synchronized ArrayList<Driver> setupDriversAtRandom(GeomVectorField buildings, EngD_MK_10 world,
+			GeometryFactory fa, int numDrivers) {
+
+		ArrayList<Driver> agents = new ArrayList<Driver>();
 		Bag myBuildings = buildings.getGeometries();
 		int myBuildingsSize = myBuildings.numObjs;
-		
-		for(int i = 0; i < numDrivers; i++){
-			
+
+		for (int i = 0; i < numDrivers; i++) {
+
 			Object o = myBuildings.get(world.random.nextInt(myBuildingsSize));
 			MasonGeometry mg = (MasonGeometry) o;
-			while(mg.geometry.getArea() > 1000){
+			while (mg.geometry.getArea() > 1000) {
 				o = myBuildings.get(world.random.nextInt(myBuildingsSize));
 				mg = (MasonGeometry) o;
 			}
-			//Point myPoint = mg.geometry.getCentroid();
-			//Coordinate myC = new Coordinate(myPoint.getX(), myPoint.getY());
+			// Point myPoint = mg.geometry.getCentroid();
+			// Coordinate myC = new Coordinate(myPoint.getX(), myPoint.getY());
 			Coordinate myC = (Coordinate) mg.geometry.getCoordinate().clone();
 			Driver a = new Driver(world, myC);
 			agents.add(a);
-			
+
 			world.schedule.scheduleOnce(a);
 		}
-		
+
 		return agents;
 	}
-	
 
-	public static synchronized ArrayList<Driver> setupDriversAtDepots(EngD_MK_10 world, 
-			GeometryFactory fa, int numDrivers){
-		
-		ArrayList <Driver> agents = new ArrayList <Driver> ();
+	public static synchronized ArrayList<Driver> setupDriversAtDepots(EngD_MK_10 world, GeometryFactory fa,
+			int numDrivers) {
+
+		ArrayList<Driver> agents = new ArrayList<Driver>();
 		Bag myDepots = world.depotLayer.getGeometries();
 		int myDepotsSize = myDepots.numObjs;
-		
-		for(int i = 0; i < numDrivers; i++){
-			
+
+		for (int i = 0; i < numDrivers; i++) {
+
 			Object o = myDepots.get(world.random.nextInt(myDepotsSize));
 			Headquarters depot = (Headquarters) o;
 			Coordinate myC = (Coordinate) depot.geometry.getCoordinate().clone();
 			Driver driver = new Driver(world, myC);
 			agents.add(driver);
-			
+
 			depot.enterDepot(driver);
-			//driver.setNode(depot.getNode());
+			// driver.setNode(depot.getNode());
 		}
-		
+
 		return agents;
 	}
 }

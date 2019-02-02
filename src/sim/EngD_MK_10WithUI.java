@@ -158,8 +158,8 @@ public class EngD_MK_10WithUI extends GUIState {
 	}
 
 	/**
-	 * /////////////////////// Poly Portrayal Colours //////////////////////// The
-	 * portrayal used to display Polygons with the appropriate color
+	 * Poly Portrayal Colours 
+	 * The portrayal used to display Polygons with the appropriate colour
 	 */
 	class PolyPortrayal extends GeomPortrayal {
 
@@ -260,8 +260,8 @@ public class EngD_MK_10WithUI extends GUIState {
 	}
 
 	/**
-	 * /////////////// Model Finish /////////////// Quits the simulation and cleans
-	 * up.
+	 * Model Finish
+	 * Quits the simulation and cleans up.
 	 */
 	public void quit() {
 		System.out.println("Model closed.");
@@ -274,7 +274,7 @@ public class EngD_MK_10WithUI extends GUIState {
 	}
 
 	/**
-	 * /////////////// Simulation Name ///////////////
+	 * Simulation Name
 	 * 
 	 * @return name of the simulation
 	 */

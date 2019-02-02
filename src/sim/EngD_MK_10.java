@@ -61,7 +61,9 @@ import utilities.RoadNetworkUtilities;
  */
 public class EngD_MK_10 extends SimState {
 
-	/////////////// Model Parameters ///////////////
+	////////////////////////////////////////////////
+	/////////////// MODEL PARAMETERS ///////////////
+	////////////////////////////////////////////////
 
 	private static final long serialVersionUID = 1L;
 	public static int grid_width = 970;
@@ -74,6 +76,8 @@ public class EngD_MK_10 extends SimState {
 
 	public static int loadingTime = 6; // 1 = 5 minutes
 	public static int deliveryTime = 6; // 1 = 5 minutes
+	
+	///////////// COMMODITY PARAMETERS ////////////////
 	public static int approxManifestSize = 4; // Sandbags. 6 per household. 24 per load/car
 	// public static int approxManifestSize = 10; // Water+Blanket Combo. 1
 	// 24-pack+3 blankets per household. 10 per load/car
@@ -92,14 +96,10 @@ public class EngD_MK_10 extends SimState {
 	public static int numBays = 10;
 	public static double probFailedDelivery = .0;
 
-	/////////////// Data Sources ///////////////
-
+	/////////////// DATA SOURCES ///////////////
 	String dirName = "data/";
 
-	/////////////// END Data Sources ///////////////
-
-	/////////////// Containers ///////////////
-
+	/////////////// CONTAINERS ///////////////
 	public GeomVectorField world = new GeomVectorField();
 	public GeomVectorField baseLayer = new GeomVectorField(grid_width, grid_height);
 	public GeomVectorField osviLayer = new GeomVectorField(grid_width, grid_height);
@@ -119,10 +119,8 @@ public class EngD_MK_10 extends SimState {
 	public Bag roadNodes = new Bag();
 	public Network roads = new Network(false);
 
-	/////////////// End Containers ///////////////
-
-	/////////////// Objects ///////////////
-
+	/////////////// OBJECTS ///////////////
+	
 	// Model ArrayLists for agents and OSVI Polygons
 	public ArrayList<Driver> agents = new ArrayList<Driver>(10);
 	ArrayList<Integer> assignedWards = new ArrayList<Integer>();
@@ -142,24 +140,22 @@ public class EngD_MK_10 extends SimState {
 
 	boolean verbose = false;
 
-	/////////////// END Objects ///////////////
-
 	///////////////////////////////////////////////
 	/////////////// BEGIN functions ///////////////
 	///////////////////////////////////////////////
 
 	/**
-	 * Default constructor function
+	 * Default Constructor
 	 * 
-	 * @param seed
+	 * @param randomSeed
 	 */
-	public EngD_MK_10(long seed) {
-		super(seed);
+	public EngD_MK_10(long randomSeed) {
+		super(randomSeed);
 		random = new MersenneTwisterFast(12345);
 	}
 
 	/**
-	 * /////////////// OSVI Polygon Setup /////////////// Polygon Setup
+	 * OSVI Polygon Setup
 	 */
 	void setup() {
 		// copy over the geometries into a list of Polygons
@@ -183,45 +179,63 @@ public class EngD_MK_10 extends SimState {
 			///////////// READING IN DATA ////////////////
 			//////////////////////////////////////////////
 
-			File wardsFile = new File("data/GloucestershireFinal_LSOA1.shp");
+			///////////// OSVI / LSOA ////////////////
+			File wardsFile = new File("data/GL_OSVI_2019.shp");
 			ShapeFileImporter.read(wardsFile.toURI().toURL(), world, Polygon.class);
 			System.out.println("Reading in OSVI shapefile from " + wardsFile + "...done");
 			// GeomVectorFieldPortrayal polyPortrayal = new GeomVectorFieldPortrayal(true);
-			// // for OSVI viz.
+			// for OSVI viz.
+			
+			/////////////////////////////////////////////////////////
+			///////////// CENTROIDS / DELIVERY GOALS ////////////////
+			/////////////////////////////////////////////////////////
+			// ALL DELIVERY LOCATIONS FOR GL_ITN_MultipartToSinglepart.shp
+			InputCleaning.readInVectorLayer(centroidsLayer,
+			dirName + "Gloucestershire_Centroids_with_Road_ID_Households.shp", "Centroids", new Bag());
+
+			// ALL DELIVERY LOCATIONS FOR GL_ITN_MultipartToSinglepart1s2s3s.shp
+			//InputCleaning.readInVectorLayer(centroidsLayer, dirName +
+			//"GL_Centroids_MovedForModel.shp", "All Centroids", new Bag());
+
+			// ONLY DELIVERY LOCATIONS WITH A RED OSVI RATING +
+			// GL_ITN_MultipartToSinglepart1s2s3s.shp
+			//InputCleaning.readInVectorLayer(centroidsLayer, dirName + "GL_Centroids_MovedForModel_MultiToSingle_OSVI_RED_ONLY.shp",
+					//"OSVI RED Centroids ONLY", new Bag());
+
+			//////////////////////////////////////////
+			///////////// HQ / DEPOTS ////////////////
+			//////////////////////////////////////////
 			GeomVectorField dummyDepotLayer = new GeomVectorField(grid_width, grid_height);
-			// InputCleaning.readInVectorLayer(centroidsLayer,
-			// dirName + "Gloucestershire_Centroids_with_Road_ID_Households.shp",
-			// "Centroids", new Bag()); // Delivery
-			// locations
-			InputCleaning.readInVectorLayer(centroidsLayer, dirName + "GL_Centroids_MovedForModel.shp", "Centroids",
-					new Bag()); // ALL DELIVERY LOCATIONS FOR GL_ITN_MultipartToSinglepart1s2s3s.shp
+			InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "BRC_HQ_GL.shp", "1x Depot", new Bag());
+			InputCleaning.readInVectorLayer(headquartersLayer, dirName + "BRC_HQ_GL.shp", "1x Depot", new Bag()); // Shows HQ
 
-			InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "BRC_HQ_GL.shp", "Depots", new Bag());
-			InputCleaning.readInVectorLayer(headquartersLayer, dirName + "BRC_HQ_GL.shp", "HQ", new Bag()); // Shows HQ
-
+			// TWO BRC DEPOTS IN GL
 			// InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "BRC_HQ_GL_2.shp",
-			// "Depots", new Bag()); // TWO BRC DEPOTS IN GL
-			// InputCleaning.readInVectorLayer(headquartersLayer, dirName +
-			// "BRC_HQ_GL_2.shp", "HQ", new Bag()); // Shows HQ
+			// "2x Depots", new Bag());
+			// InputCleaning.readInVectorLayer(depotLayer, dirName +
+			// "BRC_HQ_GL_2.shp", "2x Depots", new Bag());
+			
+			//////////////////////////////////////////////
+			///////////// ROADS / NETWORK ////////////////
+			//////////////////////////////////////////////
+			// FULL, NON-FLOODED ROAD NETWORK
+			InputCleaning.readInVectorLayer(roadLayer, dirName +
+			"GL_ITN_MultipartToSinglepart.shp", "Full, Non-Flooded Road Network", new Bag()); 
+			//InputCleaning.readInVectorLayer(roadLayer, dirName + "GL_ITN_MultipartToSinglepart1s2s3s.shp",
+			//		"Flooded Road Network - Levels 1-3", new Bag()); // NO MAJOR FLOODED ROADS
 
-			// InputCleaning.readInVectorLayer(roadLayer, dirName +
-			// "GL_ITN_MultipartToSinglepart.shp", "Road Network",
-			// new Bag()); // FULL, NON-FLOODED ROAD NETWORK
-			InputCleaning.readInVectorLayer(roadLayer, dirName + "GL_ITN_MultipartToSinglepart1s2s3s.shp",
-					"Road Network", new Bag()); // NO MAJOR FLOODED ROADS
-
-			InputCleaning.readInVectorLayer(osviLayer, dirName + "GloucestershireFinal_LSOA1.shp", "OSVI", new Bag());
+			/////////////////////////////////////////////////
+			///////////// BASELAYER / EXTRAS ////////////////
+			/////////////////////////////////////////////////
+			InputCleaning.readInVectorLayer(osviLayer, dirName + "GL_OSVI_2019.shp", "OSVI", new Bag());
 			InputCleaning.readInVectorLayer(boundaryLayer, dirName + "Gloucestershire_Boundary_Line.shp",
 					"County Boundary", new Bag());
-			// InputCleaning.readInVectorLayer(baseLayer, dirName +
-			// "GloucestershireFinal_LSOA1.shp", "OSVI", new Bag());
 			InputCleaning.readInVectorLayer(fz2Layer, dirName + "Gloucestershire_FZ_2.shp", "Flood Zone 2", new Bag());
 			InputCleaning.readInVectorLayer(fz3Layer, dirName + "Gloucestershire_FZ_3.shp", "Flood Zone 3", new Bag());
-			// "Parking", new Bag());
 
-			//////////////////////////////////////////////
-			////////////////// CLEANUP ///////////////////
-			//////////////////////////////////////////////
+			///////////////////////////////////////////////////
+			////////////////// DATA CLEANUP ///////////////////
+			//////////////////////////////////////////////////
 
 			// standardize the MBRs so that the visualization lines up
 
@@ -589,7 +603,7 @@ public class EngD_MK_10 extends SimState {
 	String formatted = df.format(new Date());
 
 	/**
-	 * /////////////// Main Function ///////////////
+	 * Main Function
 	 * 
 	 * Main function allows simulation to be run in stand-alone, non-GUI mode
 	 */

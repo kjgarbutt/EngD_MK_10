@@ -156,7 +156,7 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 			// System.out.println(this.toString() + " is done with the round! It took "
 			// System.out.println(this.driverID + " is done with the round! It took "
 			// + (world.schedule.getTime() - roundStartTime));
-			Bag b = world.depotLayer.getObjectsWithinDistance(geometry, world.resolution);
+			Bag b = world.headquartersLayer.getObjectsWithinDistance(geometry, world.resolution);
 			if (b.size() > 0) {
 				Headquarters d = (Headquarters) b.get(0);
 				d.enterDepot(this);
@@ -449,7 +449,7 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 			return -2;
 		}
 
-		// FINDING THE GOAL //////////////////
+		///////////////////// FINDING THE GOAL ////////////////////
 		// set up goal information
 		targetDestination = world.snapPointToRoadNetwork(place);
 
@@ -466,7 +466,7 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 		else
 			goalPoint = null;
 
-		// FINDING A PATH /////////////////////
+		///////////////// FINDING A PATH /////////////////////
 
 		path = pathfinder.astarPath(node, destinationNode, world.roads);
 
@@ -475,7 +475,7 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 			return -1;
 		}
 
-		// CHECK FOR BEGINNING OF PATH ////////
+		//////////////////// CHECK FOR BEGINNING OF PATH ///////////////////
 		// we want to be sure that we're situated on the path *right now*, and that if
 		// the path doesn't include the link we're on at this moment that we're both
 		// a) on a link that connects to the startNode
@@ -499,7 +499,7 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 			node = (GeoNode) edge.getOtherNode(node);
 		}
 
-		// CHECK FOR END OF PATH //////////////
+		//////////////////// CHECK FOR END OF PATH //////////////
 
 		if (goalPoint != null) {
 

@@ -14,8 +14,8 @@ public class AidLoadOSVIComparator implements Comparator<AidLoad> {
 
 	@Override
 	public int compare(AidLoad o1, AidLoad o2) {
-		int o1_priority = o1.getTargetCommunity().getIntegerAttribute("N_GL_OSV_1");
-		int o2_priority = o2.getTargetCommunity().getIntegerAttribute("N_GL_OSV_1");
+		int o1_priority = o1.getTargetCommunity().getIntegerAttribute("NOSVIFZ3");
+		int o2_priority = o2.getTargetCommunity().getIntegerAttribute("NOSVIFZ3");
 		if (o1_priority == o2_priority)
 			return 0;
 		else if (o1_priority < o2_priority)

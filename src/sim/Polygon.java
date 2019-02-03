@@ -27,7 +27,10 @@ public class Polygon extends MasonGeometry {
 	}
 
 	public void init() {
-		soc = getStringAttribute("OSVIRankCo");
+		//soc = getStringAttribute("NFZ2COL");
+		soc = getStringAttribute("NFZ3COL");
+		//soc = getStringAttribute("LFZ2COL");
+		//soc = getStringAttribute("LFZ3COL");
 		// soc = getIntegerAttribute("OSVIRankCo");
 	}
 

@@ -229,9 +229,9 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 		// Chooses LSOA with highest Priority Resident rating
 		// AidLoadPriorityComparator alpc = new AidLoadPriorityComparator();
 		// Chooses LSOA with highest OSVI rating
-		AidLoadOSVIComparator alpc = new AidLoadOSVIComparator();
+		//AidLoadOSVIComparator alpc = new AidLoadOSVIComparator();
 		// Chooses closest LSOA to HQ
-		// AidLoadDistanceComparator alpc = new AidLoadDistanceComparator(this);
+		AidLoadDistanceComparator alpc = new AidLoadDistanceComparator(this);
 		Collections.sort(loads, alpc); // THIS MUST BE ON FOR ABOVE SCENARIOS
 		// Comment out the above and use the following to choose
 		// loads in a random order

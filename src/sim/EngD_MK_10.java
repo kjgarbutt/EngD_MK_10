@@ -78,14 +78,14 @@ public class EngD_MK_10 extends SimState {
 	public static int deliveryTime = 6; // 1 = 5 minutes
 	
 	///////////// COMMODITY PARAMETERS ////////////////
-	public static int approxManifestSize = 4; // Sandbags. 6 per household. 24 per load/car
+	// public static int approxManifestSize = 4; // Sandbags. 6 per household. 24 per load/car
 	// public static int approxManifestSize = 10; // Water+Blanket Combo. 1
 	// 24-pack+3 blankets per household. 10 per load/car
 	// public static int approxManifestSize = 15; // Water+Cleaning Kit Combo. 1
 	// 24-pack+1 Cleaning Kit per household. 15 per load/car
 	// public static int approxManifestSize = 20; // Water. 1 24-pack per household.
 	// 20 per load/car
-	// public static int approxManifestSize = 40; // Blankets. 3 per household. 120
+	public static int approxManifestSize = 40; // Blankets. 3 per household. 120
 	// per load/car
 	// public static int approxManifestSize = 50; // Cleaning kits. 1 per household.
 	// 50 per load/car
@@ -191,7 +191,7 @@ public class EngD_MK_10 extends SimState {
 			/////////////////////////////////////////////////////////
 			// ALL DELIVERY LOCATIONS FOR GL_ITN_MultipartToSinglepart.shp
 			InputCleaning.readInVectorLayer(centroidsLayer,
-			dirName + "Gloucestershire_Centroids_with_Road_ID_Households.shp", "Centroids", new Bag());
+			dirName + "GL_Centroids_OSVI_Snapped_Singleparts.shp", "Centroids", new Bag());
 
 			// ALL DELIVERY LOCATIONS FOR GL_ITN_MultipartToSinglepart1s2s3s.shp
 			//InputCleaning.readInVectorLayer(centroidsLayer, dirName +
@@ -220,7 +220,7 @@ public class EngD_MK_10 extends SimState {
 			//////////////////////////////////////////////
 			// FULL, NON-FLOODED ROAD NETWORK
 			InputCleaning.readInVectorLayer(roadLayer, dirName +
-			"GL_ITN_MultipartToSinglepart.shp", "Full, Non-Flooded Road Network", new Bag()); 
+			"GL_ITN_Singleparts.shp", "Full, Non-Flooded Road Network", new Bag()); 
 			//InputCleaning.readInVectorLayer(roadLayer, dirName + "GL_ITN_MultipartToSinglepart1s2s3s.shp",
 			//		"Flooded Road Network - Levels 1-3", new Bag()); // NO MAJOR FLOODED ROADS
 
@@ -445,7 +445,7 @@ public class EngD_MK_10 extends SimState {
 		for (Object o : centroidGeoms) {
 
 			MasonGeometry myCentroid = (MasonGeometry) o;
-			int households = myCentroid.getIntegerAttribute("Households");
+			int households = myCentroid.getIntegerAttribute("HOUSEHOLDS");
 
 			// create a number of loads based on the number of households + 1 to cover any
 			// stragglers
@@ -485,8 +485,8 @@ public class EngD_MK_10 extends SimState {
 			int id = masonGeometry.getIntegerAttribute("ID"); // checked the ID column and it’s definitely an Int
 			// int osviRating = masonGeometry.getIntegerAttribute("L_GL_OSVI_");
 			String lsoaID = masonGeometry.getStringAttribute("LSOA_NAME");
-			int tempOSVI = masonGeometry.getIntegerAttribute("L_GL_OSVI_");
-			int households = masonGeometry.getIntegerAttribute("Households"); // would give the num of households for
+			int tempOSVI = masonGeometry.getIntegerAttribute("NOSVIFZ3");
+			int households = masonGeometry.getIntegerAttribute("HOUSEHOLDS"); // would give the num of households for
 																				// each LSOA. Use for numParcels.
 			Point highestWard = masonGeometry.geometry.getCentroid();
 			// System.out.println(lsoaID + " - OSVI rating: " + tempOSVI + ", ID: " + id);
@@ -507,9 +507,9 @@ public class EngD_MK_10 extends SimState {
 
 		int id = myCopy.getIntegerAttribute("ID"); // Here, id changes to the highestOSVI
 		assignedWards.add(id); // add ID to the "assignedWards" ArrayList
-		System.out.println("\tHighest OSVI Raiting is: " + myCopy.getIntegerAttribute("L_GL_OSVI_") + " for: "
+		System.out.println("\tHighest OSVI Raiting is: " + myCopy.getIntegerAttribute("NOSVIFZ3") + " for: "
 				+ myCopy.getStringAttribute("LSOA_NAME") + " (ward ID: " + myCopy.getIntegerAttribute("ID") + ")"
-				+ " and it has " + myCopy.getIntegerAttribute("Households") + " households that may need assistance.");
+				+ " and it has " + myCopy.getIntegerAttribute("HOUSEHOLDS") + " households that may need assistance.");
 		System.out.println("\t\tCurrent list of most vulnerable unassigned wards: " + assignedWards);
 		// Prints out: the ID for the highestOSVI
 		return myCopy.getIntegerAttribute("ROAD_ID"); // TODO: ID instead?

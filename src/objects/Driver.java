@@ -29,7 +29,7 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 	double roundDriveDistance = 0, roundWalkDistance = 0;
 
 	ArrayList<AidLoad> loads = new ArrayList<AidLoad>();
-	ArrayList<AidLoad> myRound = new ArrayList<AidLoad>();
+	ArrayList<AidLoad> myLoad = new ArrayList<AidLoad>();
 	ArrayList<String> history = new ArrayList<String>();
 
 	int index = 0;
@@ -87,7 +87,7 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 		double time = world.schedule.getTime(); // find the current time
 
 		// if you're in the process of delivering it, proceed
-		if (currentDelivery != null && this.geometry.distance(currentDelivery.geometry) <= world.resolution) {
+		if (currentDelivery != null && this.geometry.distance(currentDelivery.targetCommunity.geometry) <= world.resolution) {
 
 			// if you've arrived at the delivery point, try to deliver the parcel!
 			// attempt delivery
@@ -101,15 +101,15 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 				// currentDelivery.getAttribute("id"));
 			} else { // successful delivery! :)
 				currentDelivery.deliver();
-				myRound.remove(currentDelivery);
-				// System.out.println(
-				// this.toString() + " has delivered the parcel to:" +
-				// currentDelivery.toString());
-				// this.driverID + " has delivered the parcel to: " +
-				// currentDelivery.toString());
-				// currentDelivery.geometry =
-				// world.fa.createPoint(currentDelivery.deliveryLocation);
-				// world.deliveryLocationLayer.addGeometry(currentDelivery);
+				loads.remove(currentDelivery);
+				System.out.println(
+				this.toString() + " has delivered the parcel to:" +
+				currentDelivery.toString());
+				//this.driverID + " has delivered the parcel to: " +
+				//currentDelivery.toString());
+				//currentDelivery.geometry =
+				//world.fa.createPoint(currentDelivery.deliveryLocation);
+				//world.deliveryLocationLayer.addGeometry(currentDelivery);
 
 			}
 
@@ -156,7 +156,7 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 			// System.out.println(this.toString() + " is done with the round! It took "
 			// System.out.println(this.driverID + " is done with the round! It took "
 			// + (world.schedule.getTime() - roundStartTime));
-			Bag b = world.headquartersLayer.getObjectsWithinDistance(geometry, world.resolution);
+			Bag b = world.depotLayer.getObjectsWithinDistance(geometry, world.resolution);
 			if (b.size() > 0) {
 				Headquarters d = (Headquarters) b.get(0);
 				d.enterDepot(this);
@@ -194,6 +194,7 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 	// really basic right now: start with the first one and greedily pick the next
 	// closest, until you have them all
 	public void updateRound() {
+		System.out.println(" Updating the round...");
 		if (loads.size() < 1)
 			return;
 
@@ -215,7 +216,7 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 			AidLoad closestLoad = tempLoads.remove(best);
 			tempLoads.add(i, closestLoad);
 		}
-		myRound = tempLoads;
+		myLoad = tempLoads;
 	}
 
 	@Override

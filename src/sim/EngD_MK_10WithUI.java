@@ -125,7 +125,7 @@ public class EngD_MK_10WithUI extends GUIState {
 		floods3.setPortrayalForAll(new GeomPortrayal(Color.CYAN, true));
 		floods3.setImmutableField(true);
 
-		headquarters.setField(world.headquartersLayer);
+		headquarters.setField(world.depotLayer);
 		headquarters.setPortrayalForAll(new GeomPortrayal(Color.BLACK, 200, true));
 		
 		polyPortrayal.setField(world.world);

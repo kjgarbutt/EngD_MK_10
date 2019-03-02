@@ -78,18 +78,17 @@ public class EngD_MK_10 extends SimState {
 	public static int deliveryTime = 6; // 1 = 5 minutes
 	
 	///////////// COMMODITY PARAMETERS ////////////////
-	public static int approxManifestSize = 4; // Sandbags. 6 per household. 24 per load/car
+	//public static int approxManifestSize = 75; // Sandbags. 6 per household. 24 per load/car
 	// public static int approxManifestSize = 10; // Water+Blanket Combo. 1
 	// 24-pack+3 blankets per household. 10 per load/car
 	// public static int approxManifestSize = 15; // Water+Cleaning Kit Combo. 1
 	// 24-pack+1 Cleaning Kit per household. 15 per load/car
-	// public static int approxManifestSize = 20; // Water. 1 24-pack per household.
+	public static int approxManifestSize = 20; // Water. 1 24-pack per household.
 	// 20 per load/car
 	// public static int approxManifestSize = 40; // Blankets. 3 per household. 120
 	// per load/car
 	// public static int approxManifestSize = 50; // Cleaning kits. 1 per household.
 	// 50 per load/car
-	// public static int approxManifestSize = 1000; // TEST
 
 	public static int numMaxAgents = 10;
 	public static int numMaxLoads = 10000;
@@ -108,7 +107,6 @@ public class EngD_MK_10 extends SimState {
 	public GeomVectorField fz3Layer = new GeomVectorField(grid_width, grid_height);
 	public GeomVectorField roadLayer = new GeomVectorField(grid_width, grid_height);
 	public GeomVectorField depotLayer = new GeomVectorField(grid_width, grid_height);
-	public GeomVectorField headquartersLayer = new GeomVectorField(grid_width, grid_height);
 	public GeomVectorField centroidsLayer = new GeomVectorField(grid_width, grid_height);
 	public GeomVectorField deliveryLocationLayer = new GeomVectorField(grid_width, grid_height);
 	public GeomVectorField agentLayer = new GeomVectorField(grid_width, grid_height);
@@ -123,7 +121,7 @@ public class EngD_MK_10 extends SimState {
 	
 	// Model ArrayLists for agents and OSVI Polygons
 	public ArrayList<Driver> agents = new ArrayList<Driver>(10);
-	ArrayList<String> assignedWards = new ArrayList<String>();
+	ArrayList<Integer> assignedWards = new ArrayList<Integer>();
 	public HashMap<MasonGeometry, Integer> visitedWardRecord = new HashMap<MasonGeometry, Integer>();
 	ArrayList<AidLoad> loadsRecord = new ArrayList<AidLoad>();
 
@@ -180,7 +178,7 @@ public class EngD_MK_10 extends SimState {
 			//////////////////////////////////////////////
 
 			///////////// OSVI / LSOA ////////////////
-			File wardsFile = new File("data/GL_OSVI1.shp");
+			File wardsFile = new File("data/GL_OSVI_2019.shp");
 			ShapeFileImporter.read(wardsFile.toURI().toURL(), world, Polygon.class);
 			System.out.println("Reading in OSVI shapefile from " + wardsFile + "...done");
 			// GeomVectorFieldPortrayal polyPortrayal = new GeomVectorFieldPortrayal(true);
@@ -192,7 +190,7 @@ public class EngD_MK_10 extends SimState {
 			// ALL DELIVERY LOCATIONS FOR GL_ITN_MultipartToSinglepart.shp
 			GeomVectorField dummyDepotLayer = new GeomVectorField(grid_width, grid_height);
 			InputCleaning.readInVectorLayer(centroidsLayer,
-			dirName + "GL_Centroids2.shp", "Centroids", new Bag());
+			dirName + "GL_Centroids_2019.shp", "Centroids", new Bag());
 
 			// ALL DELIVERY LOCATIONS FOR GL_ITN_MultipartToSinglepart1s2s3s.shp
 			//InputCleaning.readInVectorLayer(centroidsLayer, dirName +
@@ -206,8 +204,8 @@ public class EngD_MK_10 extends SimState {
 			//////////////////////////////////////////
 			///////////// HQ / DEPOTS ////////////////
 			//////////////////////////////////////////
-			InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "BRC_HQ_GL.shp", "1x Depot", new Bag());
-			InputCleaning.readInVectorLayer(headquartersLayer, dirName + "BRC_HQ_GL.shp", "1x Depot", new Bag()); // Shows HQ
+			InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "BRC_HQ_GL_2.shp", "2x Depot", new Bag());
+			//InputCleaning.readInVectorLayer(headquartersLayer, dirName + "BRC_HQ_GL_Reduced.shp", "1x Depot", new Bag()); // Shows HQ
 
 			// TWO BRC DEPOTS IN GL
 			// InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "BRC_HQ_GL_2.shp",
@@ -221,13 +219,13 @@ public class EngD_MK_10 extends SimState {
 			// FULL, NON-FLOODED ROAD NETWORK
 			InputCleaning.readInVectorLayer(roadLayer, dirName +
 			"GL_Roads.shp", "Full, Non-Flooded Road Network", new Bag()); 
-			//InputCleaning.readInVectorLayer(roadLayer, dirName + "GL_ITN_MultipartToSinglepart1s2s3s.shp",
+			//InputCleaning.readInVectorLayer(roadLayer, dirName + "GL_Roads_GYO_2019.shp",
 			//		"Flooded Road Network - Levels 1-3", new Bag()); // NO MAJOR FLOODED ROADS
 
 			/////////////////////////////////////////////////
 			///////////// BASELAYER / EXTRAS ////////////////
 			/////////////////////////////////////////////////
-			InputCleaning.readInVectorLayer(osviLayer, dirName + "GL_OSVI1.shp", "OSVI", new Bag());
+			InputCleaning.readInVectorLayer(osviLayer, dirName + "GL_OSVI_2019.shp", "OSVI", new Bag());
 			InputCleaning.readInVectorLayer(boundaryLayer, dirName + "Gloucestershire_Boundary_Line.shp",
 					"County Boundary", new Bag());
 			InputCleaning.readInVectorLayer(fz2Layer, dirName + "Gloucestershire_FZ_2.shp", "Flood Zone 2", new Bag());
@@ -312,10 +310,10 @@ public class EngD_MK_10 extends SimState {
 			agentLayer.setMBR(MBR);
 			fz2Layer.setMBR(MBR);
 			fz3Layer.setMBR(MBR);
-			headquartersLayer.setMBR(MBR);
 			osviLayer.setMBR(MBR);
 			baseLayer.setMBR(MBR);
 			boundaryLayer.setMBR(MBR);
+			depotLayer.setMBR(MBR);
 
 			// System.out.print("done");
 
@@ -449,7 +447,7 @@ public class EngD_MK_10 extends SimState {
 		for (Object o : centroidGeoms) {
 
 			MasonGeometry myCentroid = (MasonGeometry) o;
-			int households = myCentroid.getIntegerAttribute("Households");
+			int households = myCentroid.getIntegerAttribute("HOUSEHOLDS");
 
 			// create a number of loads based on the number of households + 1 to cover any
 			// stragglers
@@ -477,8 +475,7 @@ public class EngD_MK_10 extends SimState {
 	public void generateLoads() {
 		System.out.println("Generating parcels...");
 		// System.out.print("done");
-
-		ArrayList<AidLoad> myLoads = new ArrayList<AidLoad>();
+		
 		Bag centroidGeoms = centroidsLayer.getGeometries();
 
 		System.out.println("Assigning parcels to drivers...");
@@ -486,8 +483,9 @@ public class EngD_MK_10 extends SimState {
 		for (Object o : centroidGeoms) {
 
 			MasonGeometry myCentroid = (MasonGeometry) o;
-			int households = myCentroid.getIntegerAttribute("Households");
+			int households = myCentroid.getIntegerAttribute("HOUSEHOLDS");
 			Headquarters d = getClosestDepot(myCentroid);
+			ArrayList<AidLoad> myLoads = new ArrayList<AidLoad>();
 
 			// create a number of loads based on the number of households + 1 to cover any
 			// stragglers
@@ -509,6 +507,7 @@ public class EngD_MK_10 extends SimState {
 
 				loadsRecord.add(p);
 			}
+			//d.addLoads(myLoads);
 		}
 	}
 
@@ -545,8 +544,8 @@ public class EngD_MK_10 extends SimState {
 			int id = masonGeometry.getIntegerAttribute("CentroidID"); // checked the ID column and it’s definitely an Int
 			// int osviRating = masonGeometry.getIntegerAttribute("L_GL_OSVI_");
 			String lsoaID = masonGeometry.getStringAttribute("LSOA_NAME");
-			int tempOSVI = masonGeometry.getIntegerAttribute("N_OSVI_FZ3");
-			int households = masonGeometry.getIntegerAttribute("Households"); // would give the num of households for
+			int tempOSVI = masonGeometry.getIntegerAttribute("NOSVIFZ3");
+			int households = masonGeometry.getIntegerAttribute("HOUSEHOLDS"); // would give the num of households for
 																				// each LSOA. Use for numParcels.
 			Point highestWard = masonGeometry.geometry.getCentroid();
 			// System.out.println(lsoaID + " - OSVI rating: " + tempOSVI + ", ID: " + id);
@@ -565,11 +564,11 @@ public class EngD_MK_10 extends SimState {
 			return -1; // no ID to find if myCopy is null, so just return a fake value
 		}
 
-		String id = myCopy.getStringAttribute("objectid"); // Here, id changes to the highestOSVI
+		int id = myCopy.getIntegerAttribute("CentroidID"); // id changes to the highestOSVI
 		assignedWards.add(id); // add ID to the "assignedWards" ArrayList
-		System.out.println("\tHighest OSVI Raiting is: " + myCopy.getIntegerAttribute("N_OSVI_FZ3") + " for: "
-				+ myCopy.getStringAttribute("LSOA_NAME") + " (ward ID: " + myCopy.getStringAttribute("objectid") + ")"
-				+ " and it has " + myCopy.getIntegerAttribute("Households") + " households that may need assistance.");
+		System.out.println("\tHighest OSVI Raiting is: " + myCopy.getIntegerAttribute("NOSVIFZ3") + " for: "
+				+ myCopy.getStringAttribute("LSOA_NAME") + " (ward ID: " + myCopy.getIntegerAttribute("CentroidID") + ")"
+				+ " and it has " + myCopy.getIntegerAttribute("HOUSEHOLDS") + " households that may need assistance.");
 		System.out.println("\t\tCurrent list of most vulnerable unassigned wards: " + assignedWards);
 		// Prints out: the ID for the highestOSVI
 		return myCopy.getIntegerAttribute("CentroidID"); // TODO: ID instead?

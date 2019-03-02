@@ -24,8 +24,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 	GeoNode myNode = null;
 
 	ArrayList<AidLoad> loads;
-	ArrayList<ArrayList<AidLoad>> rounds; // TODO extend upon this!
-
+	//ArrayList<ArrayList<AidLoad>> rounds; // TODO extend upon this!
 	int numBays;
 	ArrayList<Driver> inBays;
 	ArrayList<Driver> waiting;
@@ -37,7 +36,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 		waiting = new ArrayList<Driver>();
 		this.world = world;
 		this.numBays = numbays;
-		rounds = new ArrayList<ArrayList<AidLoad>>();
+		//rounds = new ArrayList<ArrayList<AidLoad>>();
 	}
 
 	public void setNode(GeoNode node) {
@@ -103,9 +102,9 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 	public int enterDepot(Driver d) {
 
 		// System.out.println("Driver: " + d.toString() + " has entered HQ!");
-		// System.out.println(d.driverID + " has entered HQ!");
+		System.out.println(d.driverID + " has entered HQ!");
 
-		if (rounds.size() == 0)
+		if (loads.size() == 0)
 			return -1; // finished with everything
 		else if (inBays.size() >= numBays) {
 			waiting.add(d);
@@ -116,6 +115,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 					if (inBays.size() < numBays) {
 						waiting.remove(d);
 						enterBay(d);
+						System.out.println(d.driverID + " has entered a bay.");
 					} else
 						state.schedule.scheduleOnce(this);
 				}
@@ -123,17 +123,19 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 			});
 		} else {
 			enterBay(d);
+			System.out.println(d.driverID + " has entered a bay.");
 
 		}
 
 		return EngD_MK_10.loadingTime;
 	}
 
-	ArrayList<AidLoad> getNextRound() {
-		if (rounds.size() <= 0)
-			return null;
+	
+	AidLoad getNextRound() {
+		if (loads.size() <= 0)
+			return null; 
 		else
-			return rounds.remove(0);
+			return loads.remove(0);
 	}
 
 	/////////////////////////////////////////////////////////
@@ -151,7 +153,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 
 	void enterBay(Driver d) {
 		inBays.add(d);
-		if (rounds.size() <= 0)
+		if (loads.size() <= 0)
 			return;
 
 		else
@@ -159,14 +161,15 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 
 				@Override
 				public void step(SimState state) {
-					ArrayList<AidLoad> newRound = getNextRound();
+					AidLoad newRound = getNextRound();
+					System.out.println(d.driverID + " is getting the next round..?");
 					if (newRound == null)
 						return; // force it to go back, it’s got nothing to do here!!
 					// update record of visits!
 					// TODO THIS ASSUMES ONLY ONE LOAD PER VEHICLE, and also assumes you're gonna
 					// make it!!
 					HashMap<MasonGeometry, Integer> records = ((EngD_MK_10) state).visitedWardRecord;
-					MasonGeometry targetWard = newRound.get(0).targetCommunity;
+					MasonGeometry targetWard = newRound.targetCommunity;
 					Integer numVisits = records.get(targetWard);
 					if (numVisits == null)
 						numVisits = 1;
@@ -174,12 +177,10 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 						numVisits++;
 					records.put(targetWard, numVisits);
 
-					for (AidLoad al : newRound)
-						al.transfer(d);
+					newRound.transfer(d);
 					d.updateRound();
 
-					// System.out.println(d.driverID + " has taken on a new consignment: " +
-					// newRound.toArray().toString());
+					System.out.println(d.driverID + " has taken on a new consignment: " + newRound);
 					// prints: [Ljava.lang.Object;@1d9fe5c1
 					leaveDepot(d);
 					d.startRoundClock();
@@ -194,33 +195,36 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 	 *            the Driver to remove from the Depot
 	 */
 	public void leaveDepot(Driver d) {
-		
 		// if the Driver was originally there, remove it
 		if (inBays.contains(d)) {
+			
 			inBays.remove(d);
 			world.schedule.scheduleOnce(d);
+			System.out.println(d.driverID + " is leaving the depot...");
 
 			// if there are Drivers waiting in the queue, let the next one move in
 			if (waiting.size() > 0) {
 				Driver n = waiting.remove(0);
 				inBays.add(n);
+				System.out.println("...so let's let someone else into the depot.");
 				world.schedule.scheduleOnce(world.schedule.getTime() + EngD_MK_10.loadingTime, n);
 			}
 		} else
 			System.out.println("Error: driver was never in bay");
 	}
 
-	public void addRounds(ArrayList<ArrayList<AidLoad>> rounds) {
-		this.rounds = rounds;
+	public void addRounds(ArrayList<AidLoad> rounds) {
+		this.loads.addAll(rounds);
 	}
-
+	
+	
 	public void generateRounds() {
 		// rounds.addAll(HeadquartersUtilities.gridDistribution(loads,
 		// world.deliveryLocationLayer, world.approxManifestSize));
 
 		// for each load, create a new object. Future examples can have multiple loads
 		// per round!
-		this.rounds = new ArrayList<ArrayList<AidLoad>>();
+		this.loads = new ArrayList<AidLoad>();
 
 		//////////////////////////////////////////////////////////////////////
 		////////////// THIS IS WHERE THE STRATEGIES ARE SELECTED /////////////
@@ -229,9 +233,9 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 		// Chooses LSOA with highest Priority Resident rating
 		// AidLoadPriorityComparator alpc = new AidLoadPriorityComparator();
 		// Chooses LSOA with highest OSVI rating
-		// AidLoadOSVIComparator alpc = new AidLoadOSVIComparator();
+		AidLoadOSVIComparator alpc = new AidLoadOSVIComparator();
 		// Chooses closest LSOA to HQ
-		AidLoadDistanceComparator alpc = new AidLoadDistanceComparator(this);
+		//AidLoadDistanceComparator alpc = new AidLoadDistanceComparator(this);
 		Collections.sort(loads, alpc); // THIS MUST BE ON FOR ABOVE SCENARIOS
 		// Comment out the above and use the following to choose
 		// loads in a random order
@@ -240,9 +244,13 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 		for (AidLoad al : loads) {
 			ArrayList<AidLoad> dummyLoadWrapper = new ArrayList<AidLoad>();
 			dummyLoadWrapper.add(al);
-			rounds.add(dummyLoadWrapper);
+			//dummyLoadWrapper.addAll(loads);
+			loads.addAll(dummyLoadWrapper);
 		}
 	}
+	
+	
+	
 
 	public String giveName() {
 		return "Depot" + this.geometry.getCentroid().toString();

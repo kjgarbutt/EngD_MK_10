@@ -1,6 +1,7 @@
 package objects;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import com.vividsolutions.jts.geom.Coordinate;
 

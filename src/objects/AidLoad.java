@@ -24,7 +24,7 @@ public class AidLoad extends MobileAgent {
 				// 3 = delivered
 
 	public AidLoad(Burdenable hq, MasonGeometry target, EngD_MK_10 state) {
-		super((Coordinate) target.geometry.getCoordinate());
+		super(hq.getLocation());
 		parcelID = RandomStringUtils.randomAlphanumeric(4).toUpperCase() + System.currentTimeMillis();
 		carryingUnit = hq;
 		history = new ArrayList<String>();

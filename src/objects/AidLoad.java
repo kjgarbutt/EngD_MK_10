@@ -72,6 +72,7 @@ public class AidLoad extends MobileAgent {
 			}
 
 			carryingUnit = to;
+			//history.add("\t" + carryingUnit.giveName() + "\t" + toName + "\t" + world.schedule.getTime());
 			history.add("\t" + fromName + "\t" + toName + "\t" + world.schedule.getTime());
 			// Load was transferred from + by Driver + at Time Step
 			return true;

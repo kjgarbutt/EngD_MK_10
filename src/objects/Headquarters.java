@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Random;
 
+import org.apache.commons.lang.RandomStringUtils;
+
 import com.vividsolutions.jts.geom.Coordinate;
 
 import comparators.AidLoadDistanceComparator;
@@ -28,9 +30,11 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 	int numBays;
 	ArrayList<Driver> inBays;
 	ArrayList<Driver> waiting;
+	String hqID = null;
 
 	public Headquarters(Coordinate c, int numbays, EngD_MK_10 world) {
 		super(c);
+		hqID = "HQ " + RandomStringUtils.randomAlphanumeric(4).toUpperCase();
 		loads = new ArrayList<AidLoad>();
 		inBays = new ArrayList<Driver>();
 		waiting = new ArrayList<Driver>();
@@ -39,6 +43,10 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 		//rounds = new ArrayList<ArrayList<AidLoad>>();
 	}
 
+	public String giveName() {
+		return hqID;
+	}
+	
 	public void setNode(GeoNode node) {
 		myNode = node;
 	}
@@ -102,7 +110,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 	public int enterDepot(Driver d) {
 
 		// System.out.println("Driver: " + d.toString() + " has entered HQ!");
-		System.out.println(d.driverID + " has entered HQ!");
+		//System.out.println(d.driverID + " has entered HQ!");
 
 		if (loads.size() == 0)
 			return -1; // finished with everything
@@ -115,7 +123,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 					if (inBays.size() < numBays) {
 						waiting.remove(d);
 						enterBay(d);
-						System.out.println(d.driverID + " has entered a bay.");
+						//System.out.println(d.driverID + " has entered a bay.");
 					} else
 						state.schedule.scheduleOnce(this);
 				}
@@ -123,7 +131,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 			});
 		} else {
 			enterBay(d);
-			System.out.println(d.driverID + " has entered a bay.");
+			//System.out.println(d.driverID + " has entered a bay.");
 
 		}
 
@@ -162,7 +170,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 				@Override
 				public void step(SimState state) {
 					AidLoad newRound = getNextRound();
-					System.out.println(d.driverID + " is getting the next round..?");
+					//System.out.println(d.driverID + " is getting the next round..?");
 					if (newRound == null)
 						return; // force it to go back, it’s got nothing to do here!!
 					// update record of visits!
@@ -180,7 +188,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 					newRound.transfer(d);
 					d.updateRound();
 
-					System.out.println(d.driverID + " has taken on a new consignment: " + newRound);
+					System.out.println(d.driverID + " has taken on a new consignment: " + targetWard.getStringAttribute("LSOA_NAME"));
 					// prints: [Ljava.lang.Object;@1d9fe5c1
 					leaveDepot(d);
 					d.startRoundClock();
@@ -200,13 +208,13 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 			
 			inBays.remove(d);
 			world.schedule.scheduleOnce(d);
-			System.out.println(d.driverID + " is leaving the depot...");
+			//System.out.println(d.driverID + " is leaving the depot...");
 
 			// if there are Drivers waiting in the queue, let the next one move in
 			if (waiting.size() > 0) {
 				Driver n = waiting.remove(0);
 				inBays.add(n);
-				System.out.println("...so let's let someone else into the depot.");
+				//System.out.println("...so let's let someone else into the depot.");
 				world.schedule.scheduleOnce(world.schedule.getTime() + EngD_MK_10.loadingTime, n);
 			}
 		} else
@@ -224,19 +232,23 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 
 		// for each load, create a new object. Future examples can have multiple loads
 		// per round!
+		System.out.println("Sorting parcels by chosen strategy for " + hqID);
 		this.loads = new ArrayList<AidLoad>();
+		//System.out.println("\tOriginal parcel order: " + loads);
 
 		//////////////////////////////////////////////////////////////////////
 		////////////// THIS IS WHERE THE STRATEGIES ARE SELECTED /////////////
 		/////////////////////////////////////////////////////////////////////
 		
 		// Chooses LSOA with highest Priority Resident rating
-		// AidLoadPriorityComparator alpc = new AidLoadPriorityComparator();
+		 AidLoadPriorityComparator alpc = new AidLoadPriorityComparator();
 		// Chooses LSOA with highest OSVI rating
-		AidLoadOSVIComparator alpc = new AidLoadOSVIComparator();
+		// AidLoadOSVIComparator alpc = new AidLoadOSVIComparator();
 		// Chooses closest LSOA to HQ
 		//AidLoadDistanceComparator alpc = new AidLoadDistanceComparator(this);
 		Collections.sort(loads, alpc); // THIS MUST BE ON FOR ABOVE SCENARIOS
+		//System.out.println("\tSorted parcel order: " + loads);
+		
 		// Comment out the above and use the following to choose
 		// loads in a random order
 		// Collections.shuffle(loads);
@@ -247,12 +259,5 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 			//dummyLoadWrapper.addAll(loads);
 			loads.addAll(dummyLoadWrapper);
 		}
-	}
-	
-	
-	
-
-	public String giveName() {
-		return "Depot" + this.geometry.getCentroid().toString();
 	}
 }

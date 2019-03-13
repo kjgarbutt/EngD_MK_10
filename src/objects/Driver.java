@@ -102,9 +102,9 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 			} else { // successful delivery! :)
 				currentDelivery.deliver();
 				loads.remove(currentDelivery);
-				System.out.println(
-				this.toString() + " has delivered the parcel to:" +
-				currentDelivery.toString());
+				//System.out.println(
+				//this.toString() + " has delivered the parcel to:" +
+				//currentDelivery.toString());
 				//this.driverID + " has delivered the parcel to: " +
 				//currentDelivery.toString());
 				//currentDelivery.geometry =
@@ -194,7 +194,7 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 	// really basic right now: start with the first one and greedily pick the next
 	// closest, until you have them all
 	public void updateRound() {
-		System.out.println(" Updating the round...");
+		//System.out.println(" Updating the round...");
 		if (loads.size() < 1)
 			return;
 

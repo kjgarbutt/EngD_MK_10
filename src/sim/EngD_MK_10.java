@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,6 +18,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.linearref.LengthIndexedLine;
 
+import comparators.AidLoadOSVIComparator;
 import ec.util.MersenneTwisterFast;
 import objects.AidLoad;
 import objects.Driver;
@@ -190,7 +192,7 @@ public class EngD_MK_10 extends SimState {
 			// ALL DELIVERY LOCATIONS FOR GL_ITN_MultipartToSinglepart.shp
 			GeomVectorField dummyDepotLayer = new GeomVectorField(grid_width, grid_height);
 			InputCleaning.readInVectorLayer(centroidsLayer,
-			dirName + "GL_Centroids_2019.shp", "Centroids", new Bag());
+			dirName + "GL_centroids_2019_FZOnly.shp", "Centroids", new Bag());
 
 			// ALL DELIVERY LOCATIONS FOR GL_ITN_MultipartToSinglepart1s2s3s.shp
 			//InputCleaning.readInVectorLayer(centroidsLayer, dirName +
@@ -320,20 +322,22 @@ public class EngD_MK_10 extends SimState {
 			//////////////////////////////////////////////
 			////////////////// AGENTS ////////////////////
 			//////////////////////////////////////////////
+			
+			//Way to generate HQs first, then loads
 			/*
 			for (Object o : depotLayer.getGeometries()) {
 				Headquarters d = (Headquarters) o;
-				// getLargestUnassignedWard();
+				getMostVulnerableUnassignedWard();
 				generateLoads(d);
 				d.generateRounds();
 			}
 			*/
-			//Way to generate loads first and then assign them to depots, instead of generating headquarters
-			//and then the loads
+			
+			//Way to generate loads first and then assign them to depots
 			generateLoads();
 
 			agents.addAll(DriverUtilities.setupDriversAtDepots(this, fa, numMaxAgents));
-			System.out.println("Getting unassigned LSOA with highest OSVI ratings...");
+			System.out.println("Prioritising unassigned LSOA...");
 			for (Driver p : agents) {
 				agentLayer.addGeometry(p);
 				getMostVulnerableUnassignedWard();
@@ -348,7 +352,7 @@ public class EngD_MK_10 extends SimState {
 
 	public void setupDepots(GeomVectorField dummyDepots) {
 		Bag depots = dummyDepots.getGeometries();
-		System.out.println("Setting up HQ...");
+		System.out.println("Setting up Distribution Centre(s)...");
 
 		for (Object o : depots) {
 			MasonGeometry mg = (MasonGeometry) o;
@@ -356,7 +360,10 @@ public class EngD_MK_10 extends SimState {
 			GeoNode gn = snapPointToNode(mg.geometry.getCoordinate());
 
 			Headquarters d = new Headquarters(gn.geometry.getCoordinate(), numBays, this);
+			//System.out.println("\tHQ located: " + this.hqID + " and has " + numBays + " loading bays.");
 			d.setNode(gn);
+			
+			d.generateRounds();
 
 			depotLayer.addGeometry(d);
 			schedule.scheduleOnce(d);
@@ -447,7 +454,7 @@ public class EngD_MK_10 extends SimState {
 		for (Object o : centroidGeoms) {
 
 			MasonGeometry myCentroid = (MasonGeometry) o;
-			int households = myCentroid.getIntegerAttribute("HOUSEHOLDS");
+			int households = myCentroid.getIntegerAttribute("FZHouses");
 
 			// create a number of loads based on the number of households + 1 to cover any
 			// stragglers
@@ -478,12 +485,12 @@ public class EngD_MK_10 extends SimState {
 		
 		Bag centroidGeoms = centroidsLayer.getGeometries();
 
-		System.out.println("Assigning parcels to drivers...");
+		//System.out.println("Assigning parcels to drivers...");
 
 		for (Object o : centroidGeoms) {
 
 			MasonGeometry myCentroid = (MasonGeometry) o;
-			int households = myCentroid.getIntegerAttribute("HOUSEHOLDS");
+			int households = myCentroid.getIntegerAttribute("FZHouses");
 			Headquarters d = getClosestDepot(myCentroid);
 			ArrayList<AidLoad> myLoads = new ArrayList<AidLoad>();
 
@@ -510,6 +517,7 @@ public class EngD_MK_10 extends SimState {
 			//d.addLoads(myLoads);
 		}
 	}
+	
 
 	public Headquarters getClosestDepot(MasonGeometry target) {
 		double minDist = Double.MAX_VALUE;
@@ -544,8 +552,9 @@ public class EngD_MK_10 extends SimState {
 			int id = masonGeometry.getIntegerAttribute("CentroidID"); // checked the ID column and it’s definitely an Int
 			// int osviRating = masonGeometry.getIntegerAttribute("L_GL_OSVI_");
 			String lsoaID = masonGeometry.getStringAttribute("LSOA_NAME");
-			int tempOSVI = masonGeometry.getIntegerAttribute("NOSVIFZ3");
-			int households = masonGeometry.getIntegerAttribute("HOUSEHOLDS"); // would give the num of households for
+			//int tempOSVI = masonGeometry.getIntegerAttribute("NOSVIFZ3");
+			int tempOSVI = masonGeometry.getIntegerAttribute("LPRIO");
+			int households = masonGeometry.getIntegerAttribute("FZHouses"); // would give the num of households for
 																				// each LSOA. Use for numParcels.
 			Point highestWard = masonGeometry.geometry.getCentroid();
 			// System.out.println(lsoaID + " - OSVI rating: " + tempOSVI + ", ID: " + id);
@@ -566,10 +575,17 @@ public class EngD_MK_10 extends SimState {
 
 		int id = myCopy.getIntegerAttribute("CentroidID"); // id changes to the highestOSVI
 		assignedWards.add(id); // add ID to the "assignedWards" ArrayList
-		System.out.println("\tHighest OSVI Raiting is: " + myCopy.getIntegerAttribute("NOSVIFZ3") + " for: "
-				+ myCopy.getStringAttribute("LSOA_NAME") + " (ward ID: " + myCopy.getIntegerAttribute("CentroidID") + ")"
-				+ " and it has " + myCopy.getIntegerAttribute("HOUSEHOLDS") + " households that may need assistance.");
-		System.out.println("\t\tCurrent list of most vulnerable unassigned wards: " + assignedWards);
+		//System.out.println("\tHighest OSVI Raiting is: " + myCopy.getIntegerAttribute("NOSVIFZ3") + " for: "
+		//		+ myCopy.getStringAttribute("LSOA_NAME") + " (ward ID: " + myCopy.getIntegerAttribute("CentroidID") + ")"
+		//		+ " and it has " + myCopy.getIntegerAttribute("FZHouses") + " households that may need assistance.");
+		//System.out.println("\t\tCurrent list of most vulnerable unassigned wards: " + assignedWards);
+
+		System.out.println("\t"
+				+ myCopy.getStringAttribute("LSOA_NAME") + " (LSOA ID: " 
+				+ myCopy.getIntegerAttribute("CentroidID") + ") has a PRIO rating of " 
+				+ myCopy.getIntegerAttribute("LPRIO") + " and it has " 
+				+ myCopy.getIntegerAttribute("FZHouses") + " households that may need assistance.");
+		System.out.println("\t\tCurrent list of high priority unassigned wards: " + assignedWards);
 		// Prints out: the ID for the highestOSVI
 		return myCopy.getIntegerAttribute("CentroidID"); // TODO: ID instead?
 	}

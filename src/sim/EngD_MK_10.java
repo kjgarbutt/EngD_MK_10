@@ -66,40 +66,63 @@ public class EngD_MK_10 extends SimState {
 	////////////////////////////////////////////////
 	/////////////// MODEL PARAMETERS ///////////////
 	////////////////////////////////////////////////
-
 	private static final long serialVersionUID = 1L;
 	public static int grid_width = 970;
 	public static int grid_height = 620;
-	public static double resolution = 5;
-	// the granularity of the simulation (fiddle around with this to merge nodes
-	// into one another)
+	public static double resolution = 5; // the granularity of the simulation-fiddle with this to merge nodes
 
-	public static double speed_vehicle = 1000; // approximately 30MPH
+	public static double speed_vehicle = 5000;	// approximately 60kph/37mph
 
-	public static int loadingTime = 4; // 1 = 5 minutes
-	public static int deliveryTime = 6; // 1 = 5 minutes
+	public static int loadingTime = 10; // 1 = 5 minutes
+	public static int deliveryTime = 20; // 1 = 5 minutes
 	
 	///////////// COMMODITY PARAMETERS ////////////////
-	//public static int approxManifestSize = 75; // Sandbags. 6 per household. 24 per load/car
-	// public static int approxManifestSize = 10; // Water+Blanket Combo. 1
-	// 24-pack+3 blankets per household. 10 per load/car
-	// public static int approxManifestSize = 15; // Water+Cleaning Kit Combo. 1
-	// 24-pack+1 Cleaning Kit per household. 15 per load/car
-	public static int approxManifestSize = 20; // Water. 1 24-pack per household.
-	// 20 per load/car
-	// public static int approxManifestSize = 40; // Blankets. 3 per household. 120
-	// per load/car
-	// public static int approxManifestSize = 50; // Cleaning kits. 1 per household.
-	// 50 per load/car
+	//public static int approxManifestSize = 10;	// Sandbags. 6 per household. 60 per load/car
+	public static int approxManifestSize = 30;
+		// Water+Blanket Combo: 1x 24-pack+3x blankets per household. 30 houses per load.
+		// Water+Hygiene Kit Combo: 1x 24-pack+3x Hygiene Kits per household. 30 houses per load. 
+		// Water+Cleaning Kit Combo. 1x 24-pack+1x Cleaning Kit per household. 30 houses per load.
+	//public static int approxManifestSize = 50;
+		// Water. 1 24-pack per household. 50 houses served per load
+		// There are 4 litres in a gallon. People need 1 gallon per day.
+		// Average household size = 3. That's 3 gallons or 12 litres per house per day
 
-	public static int numMaxAgents = 10;
+	public static int numMaxAgents = 6;
 	public static int numMaxLoads = 10000;
-	public static int numBays = 10;
-	public static double probFailedDelivery = .0;
+	public static int numBays = 5;
+	public static double probFailedDelivery = .001;
+	public double probBreakdown = .0001;
+	public int breakdownRecoveryTime = 25;
 
 	/////////////// DATA SOURCES ///////////////
 	String dirName = "data/";
-
+	///////////// GLOUCESTERSHIRE //////////////
+	//////////// SNAPPED TO REDUCED ////////////
+	//////// MUST USE GL REDUCED ROADS /////////
+	String dirOSVIFISOnly = "GL_Centroids_2019_FIS_ONLY/GL_Centroids_2019_LOSVIFZ3_Order_FIS_ONLY_SnappedToReduced.shp";
+	String dirFISFISOnly = "GL_Centroids_2019_FIS_ONLY/GL_Centroids_2019_LFIS_Order_FIS_ONLY_SnappedToReduced.shp";
+	String dirPRIOFISOnly = "GL_Centroids_2019_FIS_ONLY/GL_Centroids_2019_LPRIO_Order_FIS_ONLY_SnappedToGYOReduced.shp";
+	String dirRANDFISOnly = "GL_Centroids_2019_FIS_ONLY/GL_Centroids_2019_Random_Order_FIS_ONLY_SnappedToReduced.shp";
+	///////// SNAPPED TO GYO REDUCED ///////////
+	////// MUST USE GYO REDUCED ROADS //////////
+	String dirOSVIFISOnlyFlooded = "GL_Centroids_2019_FIS_ONLY/GL_Centroids_2019_LOSVIFZ3_Order_FIS_ONLY_SnappedToGYOReduced.shp";
+	String dirLFISFISOnlyFlooded = "GL_Centroids_2019_FIS_ONLY/GL_Centroids_2019_LFIS_Order_FIS_ONLY_SnappedToGYOReduced.shp";	
+	String dirPRIOFISOnlyFlooded = "GL_Centroids_2019_FIS_ONLY/GL_Centroids_2019_LPRIO_Order_FIS_ONLY_SnappedToGYOReduced.shp";
+	String dirRANDFISOnlyFlooded = "GL_Centroids_2019_FIS_ONLY/GL_Centroids_2019_Random_Order_FIS_ONLY_SnappedToGYOReduced.shp";
+	////////////////// NORFOLK ////////////////
+	//////////// SNAPPED TO REDUCED ///////////
+	///////// MUST USE NK REDUCED ROADS ///////
+	String dirNKOSVIFISOnly = "NK_Centroids_FIS_ONLY/NK_Centroids_LOSVIFZ3_Order_FISONLY_SnappedToReduced.shp";
+	String dirNKLFISFISOnly = "NK_Centroids_FIS_ONLY/NK_Centroids_FIS_Order_FISONLY_SnappedToReduced.shp";
+	String dirNKPRIOFISOnly = "NK_Centroids_FIS_ONLY/NK_Centroids_LPRIO_Order_FISONLY_SnappedToReduced.shp";
+	String dirNKRANDFISOnly = "NK_Centroids_FIS_ONLY/NK_Centroids_LRANDO_Order_FISONLY_SnappedToReduced.shp";
+	////////// SNAPPED TO GYO REDUCED //////////
+	/////// MUST USE GYO REDUCED ROADS /////////
+	String dirNKOSVIFISOnlyFlooded = "NK_Centroids_MovedForFlooding/NK_Centroids_LOSVIFZ3_Order_FISONLY_SnappedToNoFloodedReduced.shp";
+	String dirNKLFISFISOnlyFlooded = "NK_Centroids_MovedForFlooding/NK_Centroids_FIS_Order_FISONLY_SnappedToNoFloodedReduced.shp";
+	String dirNKPRIOFISOnlyFlooded = "NK_Centroids_MovedForFlooding/NK_Centroids_LPRIO_Order_FISONLY_SnappedToNoFloodedReduced.shp";
+	String dirNKRANDFISOnlyFlooded = "NK_Centroids_MovedForFlooding/NK_Centroids_LRANDO_Order_FISONLY_SnappedToNoFloodedReduced.shp";
+	
 	/////////////// CONTAINERS ///////////////
 	public GeomVectorField world = new GeomVectorField();
 	public GeomVectorField baseLayer = new GeomVectorField(grid_width, grid_height);
@@ -120,7 +143,6 @@ public class EngD_MK_10 extends SimState {
 	public Network roads = new Network(false);
 
 	/////////////// OBJECTS ///////////////
-	
 	// Model ArrayLists for agents and OSVI Polygons
 	public ArrayList<Driver> agents = new ArrayList<Driver>(10);
 	ArrayList<Integer> assignedWards = new ArrayList<Integer>();
@@ -143,7 +165,6 @@ public class EngD_MK_10 extends SimState {
 	///////////////////////////////////////////////
 	/////////////// BEGIN functions ///////////////
 	///////////////////////////////////////////////
-
 	/**
 	 * Default Constructor
 	 * 
@@ -179,68 +200,85 @@ public class EngD_MK_10 extends SimState {
 			///////////// READING IN DATA ////////////////
 			//////////////////////////////////////////////
 
-			///////////// OSVI / LSOA ////////////////
-			File wardsFile = new File("data/GL_OSVI_2019.shp");
+			/////////////////////////////////////////////
+			//////////////// LSOA POLYGON ///////////////
+			/////////////////////////////////////////////
+			File wardsFile = new File("data/GL_OSVI/GL_OSVI_2019.shp");	// Gloucestershire LSOA
+			//File wardsFile = new File("data/NK_OSVI/NK_LSOA.shp");	// Norfolk LSOA
 			ShapeFileImporter.read(wardsFile.toURI().toURL(), world, Polygon.class);
 			System.out.println("Reading in OSVI shapefile from " + wardsFile + "...done");
-			// GeomVectorFieldPortrayal polyPortrayal = new GeomVectorFieldPortrayal(true);
-			// for OSVI viz.
+			// GeomVectorFieldPortrayal polyPortrayal = new GeomVectorFieldPortrayal(true); // for OSVI viz.
+			//File wardsFile = new File("data/GL_OSVI_2019.shp");
 			
-			/////////////////////////////////////////////////////////
-			///////////// CENTROIDS / DELIVERY GOALS ////////////////
-			/////////////////////////////////////////////////////////
-			// ALL DELIVERY LOCATIONS FOR GL_ITN_MultipartToSinglepart.shp
+			/////////////////////////////////////////////
+			/////// CENTROIDS / DELIVERY GOALS //////////
+			/////////////////////////////////////////////
+			InputCleaning.readInVectorLayer(centroidsLayer, dirName + 
+					dirOSVIFISOnlyFlooded, "All Centroids", new Bag()); 
+					//"GL_Centroids_2019_MovedForFlooding/GL_Centroids_2019_MovedForFlooding_LFIS_Order_FIS_ONLY_SnappedToGYOReduced.shp", "All Centroids", new Bag()); 
+					//"NK_Centroids/NKCentroidTest.shp", "All Centroids", new Bag()); 
+			
+			/////////////////////////////////////////////
+			/////////////// HQ / DEPOTS /////////////////
+			/////////////////////////////////////////////
 			GeomVectorField dummyDepotLayer = new GeomVectorField(grid_width, grid_height);
-			InputCleaning.readInVectorLayer(centroidsLayer,
-			dirName + "GL_centroids_2019_FZOnly.shp", "Centroids", new Bag());
-
-			// ALL DELIVERY LOCATIONS FOR GL_ITN_MultipartToSinglepart1s2s3s.shp
-			//InputCleaning.readInVectorLayer(centroidsLayer, dirName +
-			//"GL_Centroids_MovedForModel.shp", "All Centroids", new Bag());
-
-			// ONLY DELIVERY LOCATIONS WITH A RED OSVI RATING +
-			// GL_ITN_MultipartToSinglepart1s2s3s.shp
-			//InputCleaning.readInVectorLayer(centroidsLayer, dirName + "GL_Centroids_MovedForModel_MultiToSingle_OSVI_RED_ONLY.shp",
-					//"OSVI RED Centroids ONLY", new Bag());
-
-			//////////////////////////////////////////
-			///////////// HQ / DEPOTS ////////////////
-			//////////////////////////////////////////
-			InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "BRC_HQ_GL_2.shp", "2x Depot", new Bag());
-			//InputCleaning.readInVectorLayer(headquartersLayer, dirName + "BRC_HQ_GL_Reduced.shp", "1x Depot", new Bag()); // Shows HQ
-
-			// TWO BRC DEPOTS IN GL
-			// InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "BRC_HQ_GL_2.shp",
-			// "2x Depots", new Bag());
-			// InputCleaning.readInVectorLayer(depotLayer, dirName +
-			// "BRC_HQ_GL_2.shp", "2x Depots", new Bag());
+			InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "GL_HQ/GL_BRC_HQ_ReducedBays.shp", "REDUCED BAYS", new Bag()); // GL 1x Depots
+			//InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "GL_HQ/GL_BRC_HQ.shp", "1x Depot", new Bag()); // GL 1x Depots
+			//////InputCleaning.readInVectorLayer(depotLayer, dirName + "GL_HQ/GL_BRC_HQ.shp", "1x Depot", new Bag());	 // GL 1x Depots
+			
+			//InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "NK_HQ/NK_BRC_HQ.shp", "1x Depot", new Bag()); // Norfolk 1x Depots	
+			//InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "NK_HQ/NK_BRC_HQ_SnappedToNoFloodedReduced.shp", "1x Depot", new Bag()); // Norfolk 1x Depots
+			//////InputCleaning.readInVectorLayer(depotLayer, dirName + "NK_HQ/NK_BRC_HQ_SnappedToNoFloodedReduced.shp", "1x Depot", new Bag()); // Norfolk 1x Depots
+			
+			///////////// 2x DEPOTS //////////////////
+			//InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "GL_HQ/GL_BRC_HQ_2_SnappedToGYOReduced.shp", "2x Depots", new Bag());	// Gloucestershire 2x Depots
+			//////InputCleaning.readInVectorLayer(depotLayer, dirName + "GL_HQ/GL_BRC_HQ_2_SnappedToGYO.shp", "2x Depots", new Bag());	// Gloucestershire 2x Depots
+			
+			//InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "NK_HQ/NK_BRC_HQ_2.shp", "2x Depots, Full Roads", new Bag());	//Norfolk 2x Depots
+			//InputCleaning.readInVectorLayer(dummyDepotLayer, dirName + "NK_HQ/NK_BRC_HQ_2_SnappedToNoFloodedReduced.shp", "2x Depots, GYO Roads Only", new Bag());	//Norfolk 2x Depots
+			//////InputCleaning.readInVectorLayer(depotLayer, dirName + "NK_HQ/NK_BRC_HQ_2_SnappedToNoFloodedReduced.shp", "2x Depots", new Bag());	// Norfolk 2x Depots
+		
+			//////////////////////////////////////////////
+			///////////// FULL ROAD NETWORK //////////////
+			//////////////////////////////////////////////
+			//InputCleaning.readInVectorLayer(roadLayer, dirName +
+			//"GL_Roads/GL_Roads_Reduced.shp", "Full, Non-Flooded Road Network", new Bag());	// Gloucestershire Roads
+			//"NK_Roads/NK_Roads_Reduced.shp", "Full, Non-Flooded Road Network", new Bag());	// Norfolk Roads 
 			
 			//////////////////////////////////////////////
-			///////////// ROADS / NETWORK ////////////////
+			/////////// FLODDED ROAD NETWORK /////////////
 			//////////////////////////////////////////////
-			// FULL, NON-FLOODED ROAD NETWORK
-			InputCleaning.readInVectorLayer(roadLayer, dirName +
-			"GL_Roads.shp", "Full, Non-Flooded Road Network", new Bag()); 
-			//InputCleaning.readInVectorLayer(roadLayer, dirName + "GL_Roads_GYO_2019.shp",
-			//		"Flooded Road Network - Levels 1-3", new Bag()); // NO MAJOR FLOODED ROADS
+			InputCleaning.readInVectorLayer(roadLayer, dirName + 
+			"GL_Roads/GL_Roads_GYO_2019_Reduced.shp", "Flooded Road Network - Levels 1-3 Only", new Bag()); // NO MAJOR FLOODED ROADS
+			//"NK_Roads/NK_Roads_NoFlooded_Reduced1.shp",	"Flooded Road Network - Levels 1-3 Only", new Bag()); // NO MAJOR FLOODED ROADS
 
-			/////////////////////////////////////////////////
-			///////////// BASELAYER / EXTRAS ////////////////
-			/////////////////////////////////////////////////
-			InputCleaning.readInVectorLayer(osviLayer, dirName + "GL_OSVI_2019.shp", "OSVI", new Bag());
-			InputCleaning.readInVectorLayer(boundaryLayer, dirName + "Gloucestershire_Boundary_Line.shp",
-					"County Boundary", new Bag());
-			InputCleaning.readInVectorLayer(fz2Layer, dirName + "Gloucestershire_FZ_2.shp", "Flood Zone 2", new Bag());
-			InputCleaning.readInVectorLayer(fz3Layer, dirName + "Gloucestershire_FZ_3.shp", "Flood Zone 3", new Bag());
+			//////////////////////////////////////////////
+			////////////////// BASELAYERS ////////////////
+			//////////////////////////////////////////////
+			InputCleaning.readInVectorLayer(osviLayer, dirName + "GL_OSVI/GL_OSVI_2019.shp", "OSVI", new Bag());
+			//InputCleaning.readInVectorLayer(osviLayer, dirName + "NK_OSVI/NK_LSOA.shp", "OSVI", new Bag());
+			InputCleaning.readInVectorLayer(boundaryLayer, dirName + "GL_Boundary/GL_Boundary_Line.shp",
+			//InputCleaning.readInVectorLayer(boundaryLayer, dirName + "NK_Boundary/NK_Boundary1.shp",
+					"County Boundary", new Bag());	// County Boundary
+			
+			//////////////////////////////////////////////
+			/////////////////// FLOODS ///////////////////
+			//////////////////////////////////////////////			
+			InputCleaning.readInVectorLayer(fz2Layer, dirName + "GL_FZ/GL_FZ_2.shp", "Flood Zone 2", new Bag());	// Gloucestershire FZ2
+			InputCleaning.readInVectorLayer(fz3Layer, dirName + "GL_FZ/GL_FZ_3.shp", "Flood Zone 3", new Bag());	// Gloucestershire FZ3
+			//InputCleaning.readInVectorLayer(fz2Layer, dirName + "NK_FZ/NK_FZ2.shp", "Flood Zone 2", new Bag());	// Norfolk FZ2
+			//InputCleaning.readInVectorLayer(fz3Layer, dirName + "NK_FZ/NK_FZ3.shp", "Flood Zone 3", new Bag());	// Norfolk FZ3
 
-			///////////////////////////////////////////////////
-			////////////////// DATA CLEANUP ///////////////////
-			//////////////////////////////////////////////////
-
+			////////////////////////////////////////////////
+			////////////////// DATA CLEANUP ////////////////
+			////////////////////////////////////////////////
 			// standardize the MBRs so that the visualization lines up
 
 			MBR = osviLayer.getMBR();
+			/////////////// MUST BE ON FOR GL ///////////////////
 			MBR.init(340995, 438179, 185088, 247204);
+			/////////////// MUST BE ON FOR NK ///////////////////
+			//MBR.init(544000, 655000, 348000, 277000);
 
 			// System.out.println("Setting up OSVI Portrayals...");
 			// System.out.println();
@@ -454,11 +492,11 @@ public class EngD_MK_10 extends SimState {
 		for (Object o : centroidGeoms) {
 
 			MasonGeometry myCentroid = (MasonGeometry) o;
-			int households = myCentroid.getIntegerAttribute("FZHouses");
+			int households = myCentroid.getIntegerAttribute("FZHouses1");
 
-			// create a number of loads based on the number of households + 1 to cover any
-			// stragglers
-			int numLoads = households / approxManifestSize + 1;
+			// create a number of loads based on the number of households
+			double numLoads = households / approxManifestSize;
+			System.out.println(o + "= " + numLoads);
 			for (int i = 0; i < numLoads; i++) {
 
 				Point deliveryLoc = myCentroid.geometry.getCentroid();
@@ -490,7 +528,7 @@ public class EngD_MK_10 extends SimState {
 		for (Object o : centroidGeoms) {
 
 			MasonGeometry myCentroid = (MasonGeometry) o;
-			int households = myCentroid.getIntegerAttribute("FZHouses");
+			int households = myCentroid.getIntegerAttribute("FZHouses1");
 			Headquarters d = getClosestDepot(myCentroid);
 			ArrayList<AidLoad> myLoads = new ArrayList<AidLoad>();
 
@@ -517,7 +555,6 @@ public class EngD_MK_10 extends SimState {
 			//d.addLoads(myLoads);
 		}
 	}
-	
 
 	public Headquarters getClosestDepot(MasonGeometry target) {
 		double minDist = Double.MAX_VALUE;
@@ -528,14 +565,11 @@ public class EngD_MK_10 extends SimState {
 			double dist = h.geometry.distance(target.geometry);
 			if (dist < minDist) {
 				minDist = dist;
-				closestHQ = h;
-				
+				closestHQ = h;	
 			}
 		}
-			
 		return closestHQ;
 	}
-	
 
 	int getMostVulnerableUnassignedWard() {
 		// System.out.println("\nGetting unassigned LSOA with highest OSVI ratings...");
@@ -552,9 +586,9 @@ public class EngD_MK_10 extends SimState {
 			int id = masonGeometry.getIntegerAttribute("CentroidID"); // checked the ID column and it’s definitely an Int
 			// int osviRating = masonGeometry.getIntegerAttribute("L_GL_OSVI_");
 			String lsoaID = masonGeometry.getStringAttribute("LSOA_NAME");
-			//int tempOSVI = masonGeometry.getIntegerAttribute("NOSVIFZ3");
-			int tempOSVI = masonGeometry.getIntegerAttribute("LPRIO");
-			int households = masonGeometry.getIntegerAttribute("FZHouses"); // would give the num of households for
+			int tempOSVI = masonGeometry.getIntegerAttribute("LOSVIFZ3");
+			//int tempOSVI = masonGeometry.getIntegerAttribute("LPRIO");
+			int households = masonGeometry.getIntegerAttribute("FZHouses1"); // would give the num of households for
 																				// each LSOA. Use for numParcels.
 			Point highestWard = masonGeometry.geometry.getCentroid();
 			// System.out.println(lsoaID + " - OSVI rating: " + tempOSVI + ", ID: " + id);
@@ -582,9 +616,9 @@ public class EngD_MK_10 extends SimState {
 
 		System.out.println("\t"
 				+ myCopy.getStringAttribute("LSOA_NAME") + " (LSOA ID: " 
-				+ myCopy.getIntegerAttribute("CentroidID") + ") has a PRIO rating of " 
-				+ myCopy.getIntegerAttribute("LPRIO") + " and it has " 
-				+ myCopy.getIntegerAttribute("FZHouses") + " households that may need assistance.");
+				+ myCopy.getIntegerAttribute("CentroidID") + ") has a OSVIF rating of " 
+				+ myCopy.getIntegerAttribute("LOSVIFZ3") + " and it has " 
+				+ myCopy.getIntegerAttribute("FZHouses1") + " households that may need assistance.");
 		System.out.println("\t\tCurrent list of high priority unassigned wards: " + assignedWards);
 		// Prints out: the ID for the highestOSVI
 		return myCopy.getIntegerAttribute("CentroidID"); // TODO: ID instead?
@@ -606,7 +640,7 @@ public class EngD_MK_10 extends SimState {
 		try {
 			// save the history
 			BufferedWriter output = new BufferedWriter(
-					new FileWriter(dirName + "RoundRecord_" + formatted + "_" + mySeed + ".txt"));
+					new FileWriter(dirName + "GL_BaysTest2_OSVI_FIS_OnlyRoundRecord_" + formatted + "_" + mySeed + ".txt"));
 
 			output.write("ROUND RECORD: " + "# Drivers: " + numMaxAgents + "; " + "# Bays: " + numBays + "; "
 					+ "Loading Time: " + loadingTime + "; " + "Delivery Time: " + deliveryTime + "; "
@@ -618,7 +652,7 @@ public class EngD_MK_10 extends SimState {
 			output.close();
 
 			BufferedWriter output1 = new BufferedWriter(
-					new FileWriter(dirName + "ParcelRecord_" + formatted + "_" + mySeed + ".txt"));
+					new FileWriter(dirName + "GL_BaysTest2_OSVI_FIS_OnlyParcelRecord_" + formatted + "_" + mySeed + ".txt"));
 			output1.write("PARCEL RECORD: " + "# Drivers: " + numMaxAgents + "; " + "# Bays: " + numBays + "; "
 					+ "Loading Time: " + loadingTime + "; " + "Delivery Time: " + deliveryTime + "; "
 					+ "Manifest Size: " + approxManifestSize
@@ -637,7 +671,7 @@ public class EngD_MK_10 extends SimState {
 			output1.close();
 
 			BufferedWriter output2 = new BufferedWriter(
-					new FileWriter(dirName + "WardsVisited_" + formatted + "_" + mySeed + ".txt"));
+					new FileWriter(dirName + "GL_BaysTest2_OSVI_FIS_OnlyWardsVisited_" + formatted + "_" + mySeed + ".txt"));
 			output2.write("WARDS VISITED: " + "# Drivers: " + numMaxAgents + "; " + "# Bays: " + numBays + "; "
 					+ "Loading Time: " + loadingTime + "; " + "Delivery Time: " + deliveryTime + "; "
 					+ "Manifest Size: " + approxManifestSize + "\nLSOA,Num. Visits\n");
@@ -697,9 +731,10 @@ public class EngD_MK_10 extends SimState {
 
 		System.out.println("Running simulation...");
 
-		for (int i = 0; i < 288 * 5; i++) {
+		while (!EngD_MK_10.schedule.scheduleComplete() && EngD_MK_10.schedule.getTime() < 144)
+		//for (int i = 0; i < 145 * 5; i++) { // 12 hour shift?
 			EngD_MK_10.schedule.step(EngD_MK_10);
-		}
+		//}
 
 		EngD_MK_10.finish();
 

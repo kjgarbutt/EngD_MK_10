@@ -34,7 +34,8 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 
 	public Headquarters(Coordinate c, int numbays, EngD_MK_10 world) {
 		super(c);
-		hqID = "HQ " + RandomStringUtils.randomAlphanumeric(4).toUpperCase();
+		hqID = RandomStringUtils.randomAlphanumeric(4).toUpperCase();
+		
 		loads = new ArrayList<AidLoad>();
 		inBays = new ArrayList<Driver>();
 		waiting = new ArrayList<Driver>();
@@ -55,12 +56,10 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 		return myNode;
 	}
 
-	@Override
 	public void addLoad(AidLoad p) {
 		loads.add(p);
 	}
 
-	@Override
 	public boolean removeLoad(AidLoad p) {
 		return loads.remove(p);
 	}
@@ -69,12 +68,10 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 		return loads.removeAll(ps);
 	}
 
-	@Override
 	public void addLoads(ArrayList<AidLoad> ps) {
 		loads.addAll(ps);
 	}
 
-	@Override
 	public boolean makeTransferTo(Object o, Burdenable b) {
 		try {
 			if (o instanceof ArrayList) {
@@ -90,7 +87,6 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 		}
 	}
 
-	@Override
 	public Coordinate getLocation() {
 		return geometry.getCoordinate();
 	}
@@ -118,7 +114,6 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 			waiting.add(d);
 			world.schedule.scheduleOnce(new Steppable() {
 
-				@Override
 				public void step(SimState state) {
 					if (inBays.size() < numBays) {
 						waiting.remove(d);
@@ -188,7 +183,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 					newRound.transfer(d);
 					d.updateRound();
 
-					System.out.println(d.driverID + " has taken on a new consignment: " + targetWard.getStringAttribute("LSOA_NAME"));
+					//System.out.println(d.driverID + " has taken on a new consignment: " + targetWard.getStringAttribute("LSOA_NAME"));
 					// prints: [Ljava.lang.Object;@1d9fe5c1
 					leaveDepot(d);
 					d.startRoundClock();
@@ -211,12 +206,13 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 			//System.out.println(d.driverID + " is leaving the depot...");
 
 			// if there are Drivers waiting in the queue, let the next one move in
-			if (waiting.size() > 0) {
+			/*if (waiting.size() > 0) {
 				Driver n = waiting.remove(0);
-				inBays.add(n);
+				enterBay(n);
 				//System.out.println("...so let's let someone else into the depot.");
 				world.schedule.scheduleOnce(world.schedule.getTime() + EngD_MK_10.loadingTime, n);
 			}
+			*/
 		} else
 			System.out.println("Error: driver was never in bay");
 	}
@@ -232,7 +228,7 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 
 		// for each load, create a new object. Future examples can have multiple loads
 		// per round!
-		System.out.println("Sorting parcels by chosen strategy for " + hqID);
+		System.out.println("Sorting parcels by chosen strategy for Distribution Centre: " + hqID);
 		this.loads = new ArrayList<AidLoad>();
 		//System.out.println("\tOriginal parcel order: " + loads);
 
@@ -241,9 +237,9 @@ public class Headquarters extends SpatialAgent implements Burdenable {
 		/////////////////////////////////////////////////////////////////////
 		
 		// Chooses LSOA with highest Priority Resident rating
-		 AidLoadPriorityComparator alpc = new AidLoadPriorityComparator();
+		// AidLoadPriorityComparator alpc = new AidLoadPriorityComparator();
 		// Chooses LSOA with highest OSVI rating
-		// AidLoadOSVIComparator alpc = new AidLoadOSVIComparator();
+		AidLoadOSVIComparator alpc = new AidLoadOSVIComparator();
 		// Chooses closest LSOA to HQ
 		//AidLoadDistanceComparator alpc = new AidLoadDistanceComparator(this);
 		Collections.sort(loads, alpc); // THIS MUST BE ON FOR ABOVE SCENARIOS

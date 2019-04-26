@@ -11,7 +11,7 @@ public class ScenarioRunner {
 
 	public static void main(String[] args) {
 
-		for (int x = 0; x < 10; x++) {
+		for (int x = 0; x < 4; x++) {
 
 			EngD_MK_10 dummySim = new EngD_MK_10(System.currentTimeMillis());
 

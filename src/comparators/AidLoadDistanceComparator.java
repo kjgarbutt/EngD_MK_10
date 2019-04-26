@@ -21,7 +21,6 @@ public class AidLoadDistanceComparator implements Comparator<AidLoad> {
 		targetLocation = mg;
 	}
 
-	@Override
 	public int compare(AidLoad o1, AidLoad o2) {
 		double o1_priority = o1.getTargetCommunity().geometry.distance(targetLocation.geometry);
 		double o2_priority = o2.getTargetCommunity().geometry.distance(targetLocation.geometry);

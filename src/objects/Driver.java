@@ -86,6 +86,15 @@ public class Driver extends TrafficAgent implements Steppable, Burdenable {
 
 		double time = world.schedule.getTime(); // find the current time
 
+		if (world.random.nextDouble() < world.probBreakdown) {
+			System.out.println(
+					this.driverID + " has BROKEN DOWN! ");
+			world.schedule.scheduleOnce(time + world.breakdownRecoveryTime, this);
+			headFor(homeBase);
+			world.schedule.scheduleOnce(this);
+			return;
+		}
+		
 		// if you're in the process of delivering it, proceed
 		if (currentDelivery != null && this.geometry.distance(currentDelivery.targetCommunity.geometry) <= world.resolution) {
 

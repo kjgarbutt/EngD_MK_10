@@ -114,7 +114,7 @@ public class EngD_MK_10WithUI extends GUIState {
 		centroids.setField(world.centroidsLayer);
 		// buildings.setPortrayalForAll(new GeomPortrayal(new Color(150,150,150, 100),
 		// true));
-		centroids.setPortrayalForAll(new GeomPortrayal(Color.YELLOW, true));
+		centroids.setPortrayalForAll(new GeomPortrayal(Color.DARK_GRAY, 100, true));
 		centroids.setImmutableField(true);
 
 		floods2.setField(world.fz2Layer);
